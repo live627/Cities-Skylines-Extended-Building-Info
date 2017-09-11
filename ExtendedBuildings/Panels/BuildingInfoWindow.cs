@@ -44,12 +44,35 @@ namespace ExtendedBuildings
         Dictionary<string, Markov> buildingNames = new Dictionary<string, Markov>();
         Dictionary<string, Markov> buildingDescriptions = new Dictionary<string, Markov>();
 
-        UIButton descriptionButton;
+        //UIButton descriptionButton;
         UILabel descriptionLabel;
 
         ushort selectedBuilding;
-        bool showDescription = true;
-        bool showName = true;
+        private static bool showDescription = true;
+        public static bool ShowDescription
+        {
+            get
+            {
+                return showDescription;
+            }
+            set
+            {
+                showDescription = value;
+            }
+        }
+
+        private static bool showName = true;
+        public static bool ShowName
+        {
+            get
+            {
+                return showName;
+            }
+            set
+            {
+                showName = value;
+            }
+        }
 
         public override void Awake()
         {
@@ -93,7 +116,7 @@ namespace ExtendedBuildings
             LoadTextFiles();
             
             descriptionLabel = AddUIComponent<UILabel>();
-            descriptionButton = AddUIComponent<UIButton>();
+            //descriptionButton = AddUIComponent<UIButton>();
 
             base.Awake();
 
@@ -144,7 +167,7 @@ namespace ExtendedBuildings
             base.Start();
 
             backgroundSprite = "MenuPanel2";
-            opacity = 0.8f;
+            opacity = 0.95f;
             isVisible = true;
             canFocus = true;
             isInteractive = true;
@@ -175,8 +198,8 @@ namespace ExtendedBuildings
             happyBar.tooltip = Localization.Get(LocalizationCategory.BuildingInfo, "HappinessDescription") + " 0/0";
             happyLabel.tooltip = Localization.Get(LocalizationCategory.BuildingInfo, "HappinessDescription");
 
-            SetLabel(descriptionLabel, "Happiness");
-            descriptionLabel.textScale = 0.65f;
+            //SetLabel(descriptionLabel, "Happiness");
+            descriptionLabel.textScale = 0.6f;
             descriptionLabel.wordWrap = true;
             //descriptionLabel.size = new Vector2(barWidth - 20, 140);
             descriptionLabel.autoSize = false;
@@ -184,6 +207,8 @@ namespace ExtendedBuildings
             descriptionLabel.wordWrap = true;
             descriptionLabel.autoHeight = true;
             descriptionLabel.anchor = (UIAnchorStyle.Top | UIAnchorStyle.Left | UIAnchorStyle.Right);
+
+            /* --No more button.
             descriptionButton.normalBgSprite = "IconDownArrow";
             descriptionButton.hoveredBgSprite = "IconDownArrowHovered";
             descriptionButton.focusedBgSprite = "IconDownArrowFocused";
@@ -193,22 +218,25 @@ namespace ExtendedBuildings
             descriptionButton.colorizeSprites = true;
 
             descriptionButton.eventClick += descriptionButton_eventClick;
+            */
 
             y += vertPadding;
             height = y;
         }
 
+        /* More button hiding.
         private void descriptionButton_eventClick(UIComponent component, UIMouseEventParameter eventParam)
         {
             showDescription = !showDescription;
         }
+        */
 
         private void SetBar(UIProgressBar bar)
         {
             bar.backgroundSprite = "LevelBarBackground";
             bar.progressSprite = "LevelBarForeground";
             bar.progressColor = Color.green;
-            bar.size = new Vector2(barWidth - 120, 16);
+            bar.size = new Vector2(barWidth - 140, 16);
             bar.minValue = 0f;
             bar.maxValue = 1f;
         }
@@ -222,7 +250,7 @@ namespace ExtendedBuildings
 
         private void SetPos(UILabel title, UIProgressBar bar, float x, float y, bool visible)
         {
-            bar.relativePosition = new Vector3(x + 120, y - 3);
+            bar.relativePosition = new Vector3(x + 140, y - 3);
             title.relativePosition = new Vector3(x, y);
             if (visible)
             {
@@ -250,12 +278,6 @@ namespace ExtendedBuildings
                 }
             }
 
-            if (Input.GetKeyDown(KeyCode.N))
-            {
-                showDescription = !showName;
-                showName = showDescription;
-            }
-
             base.Update();
         }
 
@@ -270,6 +292,7 @@ namespace ExtendedBuildings
             Singleton<ImmaterialResourceManager>.instance.CheckLocalResources(data.m_position, out array, out num);
             double totalFactor = 0;
             double totalNegativeFactor = 0;
+            float pollutionBarWidthMult = 2.5f;
             foreach (var resBar in this.resourceBars)
             {
                 if (levelUpHelper.GetFactor(zone, resBar.Key) > 0)
@@ -281,7 +304,7 @@ namespace ExtendedBuildings
                     totalNegativeFactor -= levelUpHelper.GetFactor(zone, resBar.Key);
                 }
             }
-            totalNegativeFactor -= levelUpHelper.GetPollutionFactor(zone);
+            totalNegativeFactor -= levelUpHelper.GetPollutionFactor(zone) * pollutionBarWidthMult;
 
             var x = 14f;
             var negativeX = 14f;
@@ -326,7 +349,7 @@ namespace ExtendedBuildings
                 var value = levelUpHelper.GetPollutionScore(data, zone);
                 var factor = levelUpHelper.GetPollutionFactor(zone);
 
-                pollutionBar.size = new Vector2((float)(barWidth * -factor / totalNegativeFactor), 16);
+                pollutionBar.size = new Vector2((float)(barWidth * -(factor * pollutionBarWidthMult) / totalNegativeFactor), 16);
                 pollutionLabel.relativePosition = new Vector3(negativeX, 56);
                 SetProgress(pollutionBar, (float)value, 0, 100);
                 pollutionBar.relativePosition = new Vector3(negativeX, 36);
@@ -379,8 +402,7 @@ namespace ExtendedBuildings
             SetPos(happyLabel, happyBar, x, y, true);
             y += vertPadding;
 
-            descriptionButton.relativePosition = new Vector3(this.width / 2 - 40, y - 10);
-            y += 12;
+            //descriptionButton.relativePosition = new Vector3(this.width / 2 - 40, y - 10);
 
             if (this.baseBuildingWindow != null)
             {
@@ -393,7 +415,7 @@ namespace ExtendedBuildings
                 if (buildingName != null)
                 {
                     var bName = this.buildingName.text;
-                    if (showName)
+                    if ((bool) ExtendedBuildingsMod.userSettings["enableNames"])
                     {
                         if ((data.m_flags & Building.Flags.CustomName) == Building.Flags.None && !this.buildingName.hasFocus)
                         {
@@ -402,8 +424,10 @@ namespace ExtendedBuildings
                         }
                     }
 
-                    if (showDescription)
+                    if ((bool) ExtendedBuildingsMod.userSettings["enableDescriptions"])
                     {
+                        y += 12;
+
                         var desc = GetDescription(bName, buildingId, zone, data.Info.m_class.m_subService);
                         descriptionLabel.text = desc;
                         descriptionLabel.Show();
@@ -439,7 +463,7 @@ namespace ExtendedBuildings
             }
             return "";
         }
-
+        
         private string GetName(ushort buildingId, ItemClass.Zone zone, ItemClass.SubService ss)
         {
             Randomizer randomizer = new Randomizer(Singleton<SimulationManager>.instance.m_metaData.m_gameInstanceIdentifier.GetHashCode() - buildingId);

@@ -62,6 +62,13 @@ namespace ExtendedBuildings
             serviceBuildingInfo.eventVisibilityChanged += serviceBuildingInfo_eventVisibilityChanged;
         }
 
+        /*
+        public static void DebugPrint(string message)
+        {
+            DebugOutputPanel.AddMessage(ColossalFramework.Plugins.PluginManager.MessageType.Message, message);
+        }
+        */
+
         private void serviceBuildingInfo_eventVisibilityChanged(UIComponent component, bool value)
         {
             serviceWindow.Update();
