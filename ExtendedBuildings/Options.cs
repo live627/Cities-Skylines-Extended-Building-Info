@@ -23,7 +23,7 @@ namespace ExtendedBuildings
             }
         }
 
-        //All option variables get added here.
+        //All option variables are put here.
         public bool enableNames;
         public bool enableDescriptions;
 
