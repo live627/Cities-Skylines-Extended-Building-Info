@@ -415,7 +415,7 @@ namespace ExtendedBuildings
                 if (buildingName != null)
                 {
                     var bName = this.buildingName.text;
-                    if ((bool) ExtendedBuildingsMod.userSettings["enableNames"])
+                    if (EB_Options.Instance.enableNames)
                     {
                         if ((data.m_flags & Building.Flags.CustomName) == Building.Flags.None && !this.buildingName.hasFocus)
                         {
@@ -424,7 +424,7 @@ namespace ExtendedBuildings
                         }
                     }
 
-                    if ((bool) ExtendedBuildingsMod.userSettings["enableDescriptions"])
+                    if (EB_Options.Instance.enableDescriptions)
                     {
                         y += 12;
 

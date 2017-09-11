@@ -3,7 +3,6 @@ using ICities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace ExtendedBuildings
@@ -41,7 +40,6 @@ namespace ExtendedBuildings
             {
                 throw new ExtendedLoadingException("UIPanel not found (update broke the mod!): (Library) ZonedBuildingWorldInfoPanel\nAvailable panels are:\n" +
                     string.Join("  \n", GetUIPanelNames()));
-                    //FindObjectsOfType<UIPanel>().Select(p => p.name).ToArray()));
             }
             this.buildingWindow = buildingWindowGameObject.AddComponent<BuildingInfoWindow5>();
             this.buildingWindow.transform.parent = buildingInfo.transform;
