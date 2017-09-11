@@ -58,6 +58,7 @@
     <Compile Include="ExtendedLoading.cs" />
     <Compile Include="Localization\Localization.cs" />
     <Compile Include="Markov\Markov.cs" />
+    <Compile Include="Options.cs" />
     <Compile Include="Panels\ServiceInfoWindow.cs" />
     <Compile Include="Panels\BuildingInfoWindow.cs" />
     <Compile Include="Panels\CitizenHelper.cs" />
