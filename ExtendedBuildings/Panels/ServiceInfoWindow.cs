@@ -1,14 +1,10 @@
 ﻿using ColossalFramework.UI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
 
 namespace ExtendedBuildings
 {
-
     public class ServiceInfoWindow2 : MonoBehaviour
     {
         UILabel info;
@@ -22,16 +18,15 @@ namespace ExtendedBuildings
             get { return m_servicePanel; }
             set
             {
-                var stats = value.Find<UIPanel>("StatsPanel");
-                info = stats.Find<UILabel>("Info");
-                label1 = stats.AddUIComponent<UILabel>();
+                info = value.Find<UILabel>("Info");
+
+                label1 = info.AddUIComponent<UILabel>();
                 label1.color = info.color;
                 label1.textColor = info.textColor;
                 label1.textScale = info.textScale;
-                label1.relativePosition = new Vector3(0, info.height + info.relativePosition.y - 40 - LabelYOffset);
-                label1.size = new Vector2(230, 84);
+                label1.anchor = UIAnchorStyle.Left | UIAnchorStyle.Bottom;
+                label1.relativePosition = Vector3.zero;
                 label1.font = info.font;
-
                 m_servicePanel = value;
             }
         }
@@ -58,7 +53,6 @@ namespace ExtendedBuildings
                     productionRate = 0;
                 }
 
-                
                 var sb = new StringBuilder();
                 var ii = 0;
                 var ai = data.Info.m_buildingAI;
@@ -70,7 +64,7 @@ namespace ExtendedBuildings
                     var radius = (int)(((FireStationAI)data.Info.m_buildingAI).m_fireDepartmentRadius / 8);
                     sb.AppendLine(Localization.Get(LocalizationCategory.ServiceInfo, "Radius") + ": " + radius.ToString());
                     sb.AppendLine(Localization.Get(LocalizationCategory.ServiceInfo, "KittensSaved") + ": " + GetLlamaSightings(1.4));
-                    ii +=3;
+                    ii += 3;
                 }
                 else if (ai is MonumentAI)
                 {
@@ -82,15 +76,15 @@ namespace ExtendedBuildings
                     sb.AppendLine(Localization.Get(LocalizationCategory.ServiceInfo, "Attractiveness") + ": " + tourism);
                     ii += 3;
                 }
-                else if (ai is HospitalAI){
-                    
+                else if (ai is HospitalAI)
+                {
                     var strength = (int)(((HospitalAI)data.Info.m_buildingAI).m_healthCareAccumulation * productionRate / 100);
                     sb.AppendLine(Localization.Get(LocalizationCategory.ServiceInfo, "Healthcare") + ": " + strength.ToString());
                     var radius = (int)(((HospitalAI)data.Info.m_buildingAI).m_healthCareRadius  / 8);
                     sb.AppendLine(Localization.Get(LocalizationCategory.ServiceInfo, "Radius") + ": " + radius.ToString());
                     ii += 2;
                 }
-                 else if (ai is CemeteryAI)
+                else if (ai is CemeteryAI)
                 {
                     var strength = (int)(((CemeteryAI)data.Info.m_buildingAI).m_deathCareAccumulation * productionRate / 100);
                     sb.AppendLine(Localization.Get(LocalizationCategory.ServiceInfo, "Deathcare") + ": " + strength.ToString());
@@ -98,7 +92,7 @@ namespace ExtendedBuildings
                     sb.AppendLine(Localization.Get(LocalizationCategory.ServiceInfo, "Radius") + ": " + radius.ToString());
                     ii += 3;
                 }
-                 else if (ai is ParkAI)
+                else if (ai is ParkAI)
                 {
                     var strength = (int)(((ParkAI)data.Info.m_buildingAI).m_entertainmentAccumulation * productionRate / 100);
                     sb.AppendLine(Localization.Get(LocalizationCategory.ServiceInfo, "Entertainment") + ": " + strength.ToString());
@@ -107,7 +101,7 @@ namespace ExtendedBuildings
                     sb.AppendLine(Localization.Get(LocalizationCategory.ServiceInfo, "Llamas") + ": " + GetLlamaSightings(2));
                     ii += 3;
                 }
-                 else if (ai is SchoolAI)
+                else if (ai is SchoolAI)
                 {
                     var strength = (int)(((SchoolAI)data.Info.m_buildingAI).m_educationAccumulation * productionRate / 100);
                     sb.AppendLine(Localization.Get(LocalizationCategory.ServiceInfo, "Education") + ": " + strength.ToString());
@@ -115,9 +109,8 @@ namespace ExtendedBuildings
                     sb.AppendLine(Localization.Get(LocalizationCategory.ServiceInfo, "Radius") + ": " + radius.ToString());
                     sb.AppendLine(Localization.Get(LocalizationCategory.ServiceInfo, "ClassesSkipped") + ": " + GetLlamaSightings(2));
                     ii += 3;
-
                 }
-                 else if (ai is PoliceStationAI)
+                else if (ai is PoliceStationAI)
                 {
                     var strength = (int)(((PoliceStationAI)data.Info.m_buildingAI).m_policeDepartmentAccumulation * productionRate / 100);
                     sb.AppendLine(Localization.Get(LocalizationCategory.ServiceInfo, "Police") + ": " + strength.ToString());
@@ -133,10 +126,11 @@ namespace ExtendedBuildings
                     sb.AppendLine(Localization.Get(LocalizationCategory.ServiceInfo, "Radius") + ": " + radius.ToString());
                     ii += 2;
                 }
-                label1.relativePosition = new Vector3(0, info.height + info.relativePosition.y - 14 * ii - LabelYOffset);
+
+                //TODO calculate the best relative position for label1
                 label1.text = sb.ToString();
             }
-            
+
         }
 
         private string GetLlamaSightings(double scale)
