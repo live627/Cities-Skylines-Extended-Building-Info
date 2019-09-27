@@ -19,11 +19,25 @@ namespace ExtendedBuildings
             public ExtendedLoadingException(string message) : base(message) { }
         }
 
-        private static IEnumerable<UIPanel> GetUIPanelInstances() => UIView.library.m_DynamicPanels.Select(p => p.instance).OfType<UIPanel>();
-        private static string[] GetUIPanelNames() => GetUIPanelInstances().Select(p => p.name).ToArray();
+        private static IEnumerable<UIPanel> UIPanelInstances
+        {
+            get
+            {
+                return UIView.library.m_DynamicPanels.Select(p => p.instance).OfType<UIPanel>();
+            }
+        }
+
+        private static string[] UIPanelNames
+        {
+            get
+            {
+                return UIPanelInstances.Select(p => p.name).ToArray();
+            }
+        }
+
         private UIPanel GetPanel(string name)
         {
-            return GetUIPanelInstances().FirstOrDefault(p => p.name == name);
+            return UIPanelInstances.FirstOrDefault(p => p.name == name);
         }
 
         public override void OnLevelLoaded(LoadMode mode)
@@ -36,10 +50,10 @@ namespace ExtendedBuildings
             buildingWindowGameObject = new GameObject("buildingWindowObject");
 
             var buildingInfo = UIView.Find<UIPanel>("(Library) ZonedBuildingWorldInfoPanel");
-            if(buildingInfo == null)
+            if (buildingInfo == null)
             {
                 throw new ExtendedLoadingException("UIPanel not found (update broke the mod!): (Library) ZonedBuildingWorldInfoPanel\nAvailable panels are:\n" +
-                    string.Join("  \n", GetUIPanelNames()));
+                    string.Join("  \n", UIPanelNames));
             }
             this.buildingWindow = buildingWindowGameObject.AddComponent<BuildingInfoWindow5>();
             this.buildingWindow.transform.parent = buildingInfo.transform;
@@ -52,7 +66,7 @@ namespace ExtendedBuildings
             if (serviceBuildingInfo == null)
             {
                 throw new ExtendedLoadingException("UIPanel not found (update broke the mod!): (Library) CityServiceWorldInfoPanel\nAvailable panels are:\n" +
-                    string.Join("  \n", GetUIPanelNames()));
+                    string.Join("  \n", UIPanelNames));
             }
             serviceWindow = buildingWindowGameObject.AddComponent<ServiceInfoWindow2>(); 
             serviceWindow.servicePanel = serviceBuildingInfo.gameObject.transform.GetComponentInChildren<CityServiceWorldInfoPanel>();
