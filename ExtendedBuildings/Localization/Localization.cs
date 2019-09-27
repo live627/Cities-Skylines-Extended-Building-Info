@@ -16,24 +16,28 @@ namespace ExtendedBuildings
     class Localization
     {
         private static Dictionary<string, string> texts;
+        private static string[] manifestResourceNames;
+        private static readonly string locale;
+
+        static Localization()
+        {
+            locale = LocaleManager.instance.language;
+            if (locale == null)
+                locale = "en";
+            manifestResourceNames = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceNames();
+                    SetText();
+        }
 
         public static string Get(LocalizationCategory cat, string name)
         {
             if (cat == LocalizationCategory.Markov)
-            {
                 return GetResource(name);
-            }
             else
             {
-                if (texts == null)
-                {
-                     SetText();
-                }
                 var key = cat.ToString().ToLower() + "_" + name.ToLower();
                 if (!texts.ContainsKey(key))
-                {
                     return name;
-                }
+
                 return texts[key];
             }
         }
