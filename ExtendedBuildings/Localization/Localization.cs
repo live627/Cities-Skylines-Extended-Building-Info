@@ -1,19 +1,18 @@
-﻿using ColossalFramework.Globalization;
+using ColossalFramework.Globalization;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 
 namespace ExtendedBuildings
 {
-        public enum LocalizationCategory
-        {
-            Markov,
-            BuildingInfo,
-            ServiceInfo,
-        }
+    public enum LocalizationCategory
+    {
+        Markov,
+        BuildingInfo,
+        ServiceInfo,
+    }
+
     class Localization
     {
         private static Dictionary<string, string> texts;

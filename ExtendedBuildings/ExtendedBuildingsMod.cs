@@ -11,6 +11,7 @@ namespace ExtendedBuildings
                 return "Extended Building Information";
             }
         }
+
         public string Description
         {
             get
@@ -30,14 +31,12 @@ namespace ExtendedBuildings
         {
             EB_Options.Instance.enableNames = enableName;
             EB_Options.Instance.Save();
-
         }
 
         private void BuildingDescCheck(bool enableDesc)
         {
             EB_Options.Instance.enableDescriptions = enableDesc;
             EB_Options.Instance.Save();
-
         }
     }
 }

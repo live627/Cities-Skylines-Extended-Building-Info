@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace ExtendedBuildings
+﻿namespace ExtendedBuildings
 {
     using ColossalFramework;
-    using ColossalFramework.Globalization;
     using ColossalFramework.Math;
     using ColossalFramework.UI;
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Reflection;
-    using System.Timers;
     using UnityEngine;
 
     public class BuildingInfoWindow5 : UIPanel
@@ -32,7 +24,6 @@ namespace ExtendedBuildings
         UILabel educationLabel;
         UIProgressBar educationBar;
 
-
         UILabel happyLabel;
         UIProgressBar happyBar;
 
@@ -44,7 +35,6 @@ namespace ExtendedBuildings
         Dictionary<string, Markov> buildingNames = new Dictionary<string, Markov>();
         Dictionary<string, Markov> buildingDescriptions = new Dictionary<string, Markov>();
 
-        //UIButton descriptionButton;
         UILabel descriptionLabel;
 
         ushort selectedBuilding;
@@ -76,8 +66,8 @@ namespace ExtendedBuildings
 
         public override void Awake()
         {
-            resourceBars = new Dictionary<ImmaterialResourceManager.Resource, UIProgressBar>();
-            resourceLabels = new Dictionary<ImmaterialResourceManager.Resource, UILabel>();
+            resourceBars = new Dictionary<ImmaterialResourceManager.Resource, UIProgressBar>(20);
+            resourceLabels = new Dictionary<ImmaterialResourceManager.Resource, UILabel>(20);
 
             for (var i = 0; i < 20; i += 1)
             {
@@ -116,16 +106,12 @@ namespace ExtendedBuildings
             LoadTextFiles();
             
             descriptionLabel = AddUIComponent<UILabel>();
-            //descriptionButton = AddUIComponent<UIButton>();
 
             base.Awake();
-
         }
-
 
         private void LoadTextFiles()
         {
-
             var commercialName = new Markov("nameCommercial", false, 4);
             buildingNames.Add(ItemClass.Zone.CommercialHigh.ToString(), commercialName);
             buildingNames.Add(ItemClass.Zone.CommercialLow.ToString(), commercialName);
@@ -198,38 +184,17 @@ namespace ExtendedBuildings
             happyBar.tooltip = Localization.Get(LocalizationCategory.BuildingInfo, "HappinessDescription") + " 0/0";
             happyLabel.tooltip = Localization.Get(LocalizationCategory.BuildingInfo, "HappinessDescription");
 
-            //SetLabel(descriptionLabel, "Happiness");
             descriptionLabel.textScale = 0.6f;
             descriptionLabel.wordWrap = true;
-            //descriptionLabel.size = new Vector2(barWidth - 20, 140);
             descriptionLabel.autoSize = false;
             descriptionLabel.width = barWidth;
             descriptionLabel.wordWrap = true;
             descriptionLabel.autoHeight = true;
             descriptionLabel.anchor = (UIAnchorStyle.Top | UIAnchorStyle.Left | UIAnchorStyle.Right);
-
-            /* --No more button.
-            descriptionButton.normalBgSprite = "IconDownArrow";
-            descriptionButton.hoveredBgSprite = "IconDownArrowHovered";
-            descriptionButton.focusedBgSprite = "IconDownArrowFocused";
-            descriptionButton.pressedBgSprite = "IconDownArrow";
-            descriptionButton.size = new Vector3(80, 20);
-            descriptionButton.color = Color.white;
-            descriptionButton.colorizeSprites = true;
-
-            descriptionButton.eventClick += descriptionButton_eventClick;
-            */
-
+            
             y += vertPadding;
             height = y;
         }
-
-        /* More button hiding.
-        private void descriptionButton_eventClick(UIComponent component, UIMouseEventParameter eventParam)
-        {
-            showDescription = !showDescription;
-        }
-        */
 
         private void SetBar(UIProgressBar bar)
         {
@@ -273,7 +238,7 @@ namespace ExtendedBuildings
                 if (this.baseBuildingWindow != null && this.enabled && isVisible && Singleton<BuildingManager>.exists && ((Singleton<SimulationManager>.instance.m_currentFrameIndex & 15u) == 15u || selectedBuilding != building))
                 {
                     BuildingManager instance = Singleton<BuildingManager>.instance;
-                    this.UpdateBuildingInfo(building, instance.m_buildings.m_buffer[(int)building]);
+                    this.UpdateBuildingInfo(building, instance.m_buildings.m_buffer[building]);
                     selectedBuilding = building;
                 }
             }
@@ -286,7 +251,7 @@ namespace ExtendedBuildings
             var levelUpHelper = LevelUpHelper3.instance;
             var info = building.Info;
             var zone = info.m_class.GetZone();
-            Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)buildingId];
+            Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingId];
             ushort[] array;
             int num;
             Singleton<ImmaterialResourceManager>.instance.CheckLocalResources(data.m_position, out array, out num);
@@ -402,8 +367,6 @@ namespace ExtendedBuildings
             SetPos(happyLabel, happyBar, x, y, true);
             y += vertPadding;
 
-            //descriptionButton.relativePosition = new Vector3(this.width / 2 - 40, y - 10);
-
             if (this.baseBuildingWindow != null)
             {
                 if (buildingName == null)
@@ -441,12 +404,10 @@ namespace ExtendedBuildings
                 }
             }
             height = y;
-
         }
 
         private string GetDescription(string bName, ushort buildingId, ItemClass.Zone zone, ItemClass.SubService ss)
         {
-
             Randomizer randomizer = new Randomizer(Singleton<SimulationManager>.instance.m_metaData.m_gameInstanceIdentifier.GetHashCode() - buildingId);
             var year = 2015 - buildingId % 200;
             Markov markov = null;
@@ -496,7 +457,6 @@ namespace ExtendedBuildings
             else if (start == 0)
             {
                 extraTip = val.ToString("F0") + "/" + target.ToString("F0");
-
             }
             else
             {
@@ -517,7 +477,7 @@ namespace ExtendedBuildings
                 target = start;
                 start -= 20;
             }
-            serviceBar.value = Mathf.Clamp((val - start) / (float)(target - start), 0f, 1f);
+            serviceBar.value = Mathf.Clamp((val - start) / (target - start), 0f, 1f);
         }
 
         private InstanceID GetParentInstanceId()
@@ -528,6 +488,5 @@ namespace ExtendedBuildings
             }
             return (InstanceID)baseSub.GetValue(this.baseBuildingWindow);
         }
-
     }
 }
