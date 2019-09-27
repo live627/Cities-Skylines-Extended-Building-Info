@@ -1,0 +1,49 @@
+﻿BuildingInfo:
+HealthCare 健康
+FireDepartment 消防
+PoliceDepartment 警察
+EducationElementary 小学
+EducationHighSchool 中学
+EducationUniversity 大学
+DeathCare 殡葬
+PublicTransport 公交
+NoisePollution 噪音
+CrimeRate 犯罪
+Health Health
+Wellbeing Happiness
+Density Density
+Entertainment 公园
+LandValue Land Value
+Attractiveness Attractiveness
+Coverage Coverage
+FireHazard 消防
+Abandonment 遗弃
+CargoTransport Cargo
+Pollution 污染
+
+Service 公共服务
+ServiceDescription 满意度
+
+Education 教育
+EducationDescription 满意度
+
+Happiness 幸福度
+HappinessDescription 幸福度
+
+Wealth 财富累积
+LandValueProgress 地价
+Max 达到最大值
+
+ServiceInfo:
+Radius 服务半径
+FireFighting Fire Fighting
+KittensSaved Kittens Saved
+Entertainment Entertainment
+Attractiveness Attractiveness
+Healthcare Healthcare
+Deathcare Deathcare
+Llamas Llamas Sighted
+ClassesSkipped Classes Skipped
+Education Education
+Police Police
+Cargo Cargo Transport

@@ -171,6 +171,25 @@
   <ItemGroup>
     <EmbeddedResource Include="Localization\pt\text.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Localization\zh-cn\descriptionsCommercial.txt" />
+    <Content Include="Localization\zh-cn\descriptionsFarm.txt" />
+    <Content Include="Localization\zh-cn\descriptionsForest.txt" />
+    <Content Include="Localization\zh-cn\descriptionsIndustrial.txt" />
+    <Content Include="Localization\zh-cn\descriptionsMine.txt" />
+    <Content Include="Localization\zh-cn\descriptionsOffice.txt" />
+    <Content Include="Localization\zh-cn\descriptionsOil.txt" />
+    <Content Include="Localization\zh-cn\descriptionsResidential.txt" />
+    <Content Include="Localization\zh-cn\nameCommercial.txt" />
+    <Content Include="Localization\zh-cn\nameFarm.txt" />
+    <Content Include="Localization\zh-cn\nameForest.txt" />
+    <Content Include="Localization\zh-cn\nameIndustrial.txt" />
+    <Content Include="Localization\zh-cn\nameMine.txt" />
+    <Content Include="Localization\zh-cn\nameOffice.txt" />
+    <Content Include="Localization\zh-cn\nameOil.txt" />
+    <Content Include="Localization\zh-cn\nameResidential.txt" />
+    <Content Include="Localization\zh-cn\text.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "%25LOCALAPPDATA%25\Colossal Order\Cities_Skylines\Addons\Mods\$(SolutionName)"
