@@ -19,21 +19,9 @@ namespace ExtendedBuildings
             public ExtendedLoadingException(string message) : base(message) { }
         }
 
-        private static IEnumerable<UIPanel> UIPanelInstances
-        {
-            get
-            {
-                return UIView.library.m_DynamicPanels.Select(p => p.instance).OfType<UIPanel>();
-            }
-        }
+        private static IEnumerable<UIPanel> UIPanelInstances => UIView.library.m_DynamicPanels.Select(p => p.instance).OfType<UIPanel>();
 
-        private static string[] UIPanelNames
-        {
-            get
-            {
-                return UIPanelInstances.Select(p => p.name).ToArray();
-            }
-        }
+        private static string[] UIPanelNames => UIPanelInstances.Select(p => p.name).ToArray();
 
         private UIPanel GetPanel(string name)
         {
@@ -69,19 +57,12 @@ namespace ExtendedBuildings
                     string.Join("  \n", UIPanelNames));
             }
             serviceWindow = buildingWindowGameObject.AddComponent<ServiceInfoWindow2>(); 
-            serviceWindow.servicePanel = serviceBuildingInfo.gameObject.transform.GetComponentInChildren<CityServiceWorldInfoPanel>();
+            serviceWindow.ServicePanel = serviceBuildingInfo.gameObject.transform.GetComponentInChildren<CityServiceWorldInfoPanel>();
             
-            serviceBuildingInfo.eventVisibilityChanged += serviceBuildingInfo_eventVisibilityChanged;
+            serviceBuildingInfo.eventVisibilityChanged += ServiceBuildingInfo_eventVisibilityChanged;
         }
 
-        /*
-        public static void DebugPrint(string message)
-        {
-            DebugOutputPanel.AddMessage(ColossalFramework.Plugins.PluginManager.MessageType.Message, message);
-        }
-        */
-
-        private void serviceBuildingInfo_eventVisibilityChanged(UIComponent component, bool value)
+        private void ServiceBuildingInfo_eventVisibilityChanged(UIComponent component, bool value)
         {
             serviceWindow.Update();
         }

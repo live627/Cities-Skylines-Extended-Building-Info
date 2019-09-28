@@ -2,11 +2,11 @@
 HealthCare Health
 FireDepartment Fire
 PoliceDepartment Police
-EducationElementary Elem.
-EducationHighSchool High Sch.
-EducationUniversity Uni.
+EducationElementary Elementary School
+EducationHighSchool High School
+EducationUniversity University
 DeathCare Death
-PublicTransport Transp.
+PublicTransport Transport
 NoisePollution Noise
 CrimeRate Crime
 Health Health
@@ -21,17 +21,17 @@ Abandonment Abandonment
 CargoTransport Cargo
 Pollution: Pollution
 
-Service Service Progress
+Service Services
 ServiceDescription Progress until next level, combined score of factors shown above.
 
-Education Education Progress
+Education Education
 EducationDescription Education progress until next level.
 
-Happiness Happiness
+Happiness
 HappinessDescription Progress until next level, combined score of factors shown above.
 
-Wealth Wealth Progress
-LandValueProgress Land Value Progress
+Wealth Wealth
+LandValueProgress Land Value
 Max Max!
 
 ServiceInfo:

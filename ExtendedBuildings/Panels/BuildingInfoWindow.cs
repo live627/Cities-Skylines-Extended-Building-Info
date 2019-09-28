@@ -14,19 +14,6 @@
         float barWidth;
         Dictionary<ImmaterialResourceManager.Resource, UIProgressBar> resourceBars;
         Dictionary<ImmaterialResourceManager.Resource, UILabel> resourceLabels;
-
-        UIProgressBar pollutionBar;
-        UILabel pollutionLabel;
-
-        UILabel serviceLabel;
-        UIProgressBar serviceBar;
-
-        UILabel educationLabel;
-        UIProgressBar educationBar;
-
-        UILabel happyLabel;
-        UIProgressBar happyBar;
-
         UITextField buildingName;
 
         public ZonedBuildingWorldInfoPanel baseBuildingWindow;
@@ -38,70 +25,72 @@
         UILabel descriptionLabel;
 
         ushort selectedBuilding;
-        private static bool showDescription = true;
-        public static bool ShowDescription
-        {
-            get
-            {
-                return showDescription;
-            }
-            set
-            {
-                showDescription = value;
-            }
-        }
+        private List<UIProgressBar> aresourceBars;
+        private List<UILabel> aresourceLabels;
 
-        private static bool showName = true;
-        public static bool ShowName
-        {
-            get
-            {
-                return showName;
-            }
-            set
-            {
-                showName = value;
-            }
-        }
+        public static bool ShowDescription { get; set; } = true;
+        public static bool ShowName { get; set; } = true;
 
         public override void Awake()
         {
             resourceBars = new Dictionary<ImmaterialResourceManager.Resource, UIProgressBar>(20);
             resourceLabels = new Dictionary<ImmaterialResourceManager.Resource, UILabel>(20);
-
+            var resNaames = Enum.GetNames(typeof(ImmaterialResourceManager.Resource));
             for (var i = 0; i < 20; i += 1)
             {
                 var res = (ImmaterialResourceManager.Resource)i;
+                if (res != ImmaterialResourceManager.Resource.Abandonment && res != ImmaterialResourceManager.Resource.NoisePollution)
+                {
+                    var bar = AddUIComponent<UIProgressBar>();
+                    bar.backgroundSprite = "LevelBarBackground";
+                    bar.progressSprite = "LevelBarForeground";
+                    bar.progressColor = Color.green;
+                    resourceBars.Add(res, bar);
+                    var label = AddUIComponent<UILabel>();
+                    label.text = Localization.Get(LocalizationCategory.BuildingInfo, resNaames[i]);
+                    label.textScale = 0.5f;
+                    label.size = new Vector2(100, 20);
+                    resourceLabels.Add(res, label);
+                }
+            }
+            aresourceBars = new List<UIProgressBar>();
+            aresourceLabels = new List<UILabel>();
+            var ares = new string[]
+            {
+                "Service", 
+                "Education",
+                "Happiness",
+                resNaames[8], // Noise
+                resNaames[18], // Abandonment
+                "Pollution"
+            };
+            var adesc = new string[]
+            {
+                "ServiceDescription", 
+                "EducationDescription",
+                "HappinessDescription",
+                resNaames[8], // Noise
+                resNaames[18], // Abandonment
+                "Pollution"
+            };
+            for (var i = 0; i < 6; i += 1)
+            {
                 var bar = AddUIComponent<UIProgressBar>();
                 bar.backgroundSprite = "LevelBarBackground";
                 bar.progressSprite = "LevelBarForeground";
-                bar.progressColor = Color.green;
-                resourceBars.Add(res, bar);
+                bar.progressColor = i < 4 ? Color.green : Color.red;
+                bar.minValue = 0f;
+                bar.maxValue = 1f;
+                bar.tooltip = Localization.Get(LocalizationCategory.BuildingInfo, adesc[i]) + " 0/0";
+                aresourceBars.Add(bar);
                 var label = AddUIComponent<UILabel>();
-                label.text = Localization.Get(LocalizationCategory.BuildingInfo, res.ToString());
-                label.textScale = 0.5f;
+                label.tooltip = Localization.Get(LocalizationCategory.BuildingInfo, adesc[i]);
+                label.text = Localization.Get(LocalizationCategory.BuildingInfo, ares[i]);
+                label.textScale = 0.75f;
                 label.size = new Vector2(100, 20);
-                resourceLabels.Add(res, label);
+                aresourceLabels.Add(label);
             }
-
-            pollutionBar = AddUIComponent<UIProgressBar>();
-            pollutionBar.backgroundSprite = "LevelBarBackground";
-            pollutionBar.progressSprite = "LevelBarForeground";
-            pollutionBar.progressColor = Color.red;
-            pollutionLabel = AddUIComponent<UILabel>();
-            pollutionLabel.text = Localization.Get(LocalizationCategory.BuildingInfo, "Pollution");
-            pollutionLabel.textScale = 0.5f;
-            pollutionLabel.size = new Vector2(100, 20);
-
-            serviceLabel = AddUIComponent<UILabel>();
-            serviceBar = AddUIComponent<UIProgressBar>();
-
-            educationLabel = AddUIComponent<UILabel>();
-            educationBar = AddUIComponent<UIProgressBar>();
-
-            happyLabel = AddUIComponent<UILabel>();
-            happyBar = AddUIComponent<UIProgressBar>();
-
+            
             buildingNames.Clear();
             LoadTextFiles();
             
@@ -147,98 +136,40 @@
             buildingDescriptions.Add(ItemClass.SubService.IndustrialOil.ToString(), new Markov("descriptionsOil", false, 4));
         }
 
-
         public override void Start()
         {
             base.Start();
 
             backgroundSprite = "MenuPanel2";
-            opacity = 0.95f;
+            opacity = ModConfig.Instance.Opacity;
             isVisible = true;
             canFocus = true;
             isInteractive = true;
-            SetupControls();
-        }
 
-        public void SetupControls()
-        {
-            base.Start();
-
-            barWidth = this.size.x - 28;
-            float y = 70;
-
-            SetLabel(serviceLabel, Localization.Get(LocalizationCategory.BuildingInfo, "Service"));
-            SetBar(serviceBar);
-            serviceBar.tooltip = Localization.Get(LocalizationCategory.BuildingInfo, "ServiceDescription") + " 0/0";
-            serviceLabel.tooltip = Localization.Get(LocalizationCategory.BuildingInfo, "ServiceDescription");
-            y += vertPadding;
-
-            SetLabel(educationLabel, Localization.Get(LocalizationCategory.BuildingInfo, "Education"));
-            SetBar(educationBar);
-            educationBar.tooltip = Localization.Get(LocalizationCategory.BuildingInfo, "EducationDescription") + " 0/0";
-            educationLabel.tooltip = Localization.Get(LocalizationCategory.BuildingInfo, "EducationDescription");
-            y += vertPadding;
-
-            SetLabel(happyLabel, Localization.Get(LocalizationCategory.BuildingInfo, "Happiness"));
-            SetBar(happyBar);
-            happyBar.tooltip = Localization.Get(LocalizationCategory.BuildingInfo, "HappinessDescription") + " 0/0";
-            happyLabel.tooltip = Localization.Get(LocalizationCategory.BuildingInfo, "HappinessDescription");
-
+            barWidth = size.x - 28;
+            float y = ModConfig.Instance.Display == ModConfig.DisplayCategory.Compact ? 70 : 414;
+            
             descriptionLabel.textScale = 0.6f;
             descriptionLabel.wordWrap = true;
             descriptionLabel.autoSize = false;
-            descriptionLabel.width = barWidth;
-            descriptionLabel.wordWrap = true;
             descriptionLabel.autoHeight = true;
-            descriptionLabel.anchor = (UIAnchorStyle.Top | UIAnchorStyle.Left | UIAnchorStyle.Right);
+            descriptionLabel.width = barWidth;
+            descriptionLabel.anchor = UIAnchorStyle.Top | UIAnchorStyle.Left | UIAnchorStyle.Right;
             
             y += vertPadding;
             height = y;
         }
-
-        private void SetBar(UIProgressBar bar)
-        {
-            bar.backgroundSprite = "LevelBarBackground";
-            bar.progressSprite = "LevelBarForeground";
-            bar.progressColor = Color.green;
-            bar.size = new Vector2(barWidth - 140, 16);
-            bar.minValue = 0f;
-            bar.maxValue = 1f;
-        }
-
-        private void SetLabel(UILabel title, string p)
-        {
-            title.text = p;
-            title.textScale = 0.7f;
-            title.size = new Vector2(120, 30);
-        }
-
-        private void SetPos(UILabel title, UIProgressBar bar, float x, float y, bool visible)
-        {
-            bar.relativePosition = new Vector3(x + 140, y - 3);
-            title.relativePosition = new Vector3(x, y);
-            if (visible)
-            {
-                bar.Show();
-                title.Show();
-            }
-            else
-            {
-                bar.Hide();
-                title.Hide();
-            }
-        }
-
+        
         public override void Update()
         {
             var instanceId = GetParentInstanceId();
             if (instanceId.Type == InstanceType.Building && instanceId.Building != 0)
             {
                 ushort building = instanceId.Building;
-                if (this.baseBuildingWindow != null && this.enabled && isVisible && Singleton<BuildingManager>.exists && ((Singleton<SimulationManager>.instance.m_currentFrameIndex & 15u) == 15u || selectedBuilding != building))
+                if (baseBuildingWindow != null && enabled && isVisible && Singleton<BuildingManager>.exists && ((Singleton<SimulationManager>.instance.m_currentFrameIndex & 15u) == 15u || selectedBuilding != building))
                 {
                     BuildingManager instance = Singleton<BuildingManager>.instance;
-                    this.UpdateBuildingInfo(building, instance.m_buildings.m_buffer[building]);
+                    UpdateBuildingInfo(building, instance.m_buildings.m_buffer[building]);
                     selectedBuilding = building;
                 }
             }
@@ -252,30 +183,106 @@
             var info = building.Info;
             var zone = info.m_class.GetZone();
             Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingId];
-            ushort[] array;
-            int num;
-            Singleton<ImmaterialResourceManager>.instance.CheckLocalResources(data.m_position, out array, out num);
+            Singleton<ImmaterialResourceManager>.instance.CheckLocalResources(data.m_position, out ushort[] array, out int num);
+            float x = 14, s = 7, y = s * 2, negativeX = 14f, maxHeight = y;
+            int col = 0, onFactor = -1;
+            levelUpHelper.GetEducationHappyScore(buildingId, out float education, out float happy, out float commute);
+            foreach (var resBar in aresourceBars)
+            {
+                onFactor++;
+
+                var label = aresourceLabels[onFactor];
+                label.relativePosition = new Vector3(14 + (col * 230), y + s / 2);
+                resBar.relativePosition = new Vector3(120 + (col * 230), y);
+                resBar.size = new Vector2(100, 16);
+                y += resBar.size.y + s;
+                switch (onFactor)
+                {
+                    case 0:
+                        label.text = zone == ItemClass.Zone.ResidentialHigh
+                            || zone == ItemClass.Zone.ResidentialLow
+                            || zone == ItemClass.Zone.CommercialHigh
+                            || zone == ItemClass.Zone.CommercialLow
+                            ? Localization.Get(LocalizationCategory.BuildingInfo, "LandValueProgress")
+                            : Localization.Get(LocalizationCategory.BuildingInfo, "Service");
+                        SetProgress(resBar,
+                            levelUpHelper.GetProperServiceScore(buildingId),
+                            levelUpHelper.GetServiceThreshhold((ItemClass.Level)(Math.Max(-1, (int)data.Info.m_class.m_level - 1)), zone),
+                            levelUpHelper.GetServiceThreshhold(data.Info.m_class.m_level, zone));
+                        break;
+                    case 1:
+                        SetProgress(
+                            resBar,
+                            education,
+                            levelUpHelper.GetEducationThreshhold((ItemClass.Level)(Math.Max(-1, (int)data.Info.m_class.m_level - 1)), zone),
+                            levelUpHelper.GetEducationThreshhold(data.Info.m_class.m_level, zone));
+                        label.text = zone == ItemClass.Zone.CommercialHigh || zone == ItemClass.Zone.CommercialLow
+                            ? Localization.Get(LocalizationCategory.BuildingInfo, "Wealth")
+                            : Localization.Get(LocalizationCategory.BuildingInfo, "Education");
+                        break;
+                    case 2:
+                        label.text = Localization.Get(LocalizationCategory.BuildingInfo, "Happiness");
+
+                        SetProgress(resBar, happy, 0, 100);
+                        break;
+                    case 3:
+                        {
+                            int max = 0;
+                            int raw = 0;
+                            var value = levelUpHelper.GetServiceScore(ImmaterialResourceManager.Resource.NoisePollution, zone, array, num, ref raw, ref max);
+                            SetProgress(resBar, (float)value, 0, 100, raw, max);
+                            break;
+                        }
+                    case 4:
+                        {
+                            int max = 0;
+                            int raw = 0;
+                            var value = levelUpHelper.GetServiceScore(ImmaterialResourceManager.Resource.Abandonment, zone, array, num, ref raw, ref max);
+                            SetProgress(resBar, (float)value, 0, 100, raw, max);
+                            break;
+                        }
+                    case 5:
+                        var factor = levelUpHelper.GetPollutionFactor(zone);
+
+                        SetProgress(resBar, (float)levelUpHelper.GetPollutionScore(data, zone), 0, 100);
+                        break;
+                }
+                if (onFactor == 2)
+                {
+                    col = 1;
+                    y = 14;
+                }
+                maxHeight = Math.Max(y, maxHeight);
+            }
+            
+            int numFactors = 0;
             double totalFactor = 0;
             double totalNegativeFactor = 0;
-            float pollutionBarWidthMult = 2.5f;
-            foreach (var resBar in this.resourceBars)
+            float pollutionBarWidthMult = 2.5f, newTop = maxHeight;
+            foreach (var resBar in resourceBars)
             {
-                if (levelUpHelper.GetFactor(zone, resBar.Key) > 0)
-                {
+                var factor = levelUpHelper.GetFactor(zone, resBar.Key);
+                if (factor != 0)
+                    numFactors++;
+                if (factor > 0)
                     totalFactor += levelUpHelper.GetFactor(zone, resBar.Key);
-                }
                 else
                 {
+                    resBar.Value.progressColor = Color.red;
                     totalNegativeFactor -= levelUpHelper.GetFactor(zone, resBar.Key);
                 }
             }
             totalNegativeFactor -= levelUpHelper.GetPollutionFactor(zone) * pollutionBarWidthMult;
 
-            var x = 14f;
-            var negativeX = 14f;
-            foreach (var resBar in this.resourceBars)
+            y = newTop;
+            int halfNumFactors = Mathf.CeilToInt(numFactors / 2);
+            onFactor = 0;
+            col = 0;
+            foreach (var resBar in resourceBars)
             {
-                var label = this.resourceLabels[resBar.Key];
+                onFactor++;
+
+                var label = resourceLabels[resBar.Key];
                 var factor = levelUpHelper.GetFactor(zone, resBar.Key);
                 if (factor == 0)
                 {
@@ -288,133 +295,85 @@
                     resBar.Value.Show();
                     int max = 0;
                     int raw = 0;
-                    var value = levelUpHelper.GetServiceScore(resBar.Key, zone, array, num,ref raw, ref max);
-
-                    if (factor > 0)
+                    var value = levelUpHelper.GetServiceScore(resBar.Key, zone, array, num, ref raw, ref max);
+                    switch (ModConfig.Instance.Display)
                     {
-                        resBar.Value.size = new Vector2((float)(barWidth * factor / totalFactor), 16);
-                        label.relativePosition = new Vector3(x, 10);
-                        resBar.Value.relativePosition = new Vector3(x, 20);
-                        x += resBar.Value.size.x;
+                        case ModConfig.DisplayCategory.Compact:
+                            label.relativePosition = new Vector3(x, newTop + s);
+                            resBar.Value.relativePosition = new Vector3(x, newTop + label.height + s);
+                            resBar.Value.size = new Vector2(barWidth / halfNumFactors - s, 16);
+                            x += resBar.Value.size.x + s;
+                            break;
+                        case ModConfig.DisplayCategory.Extended:
+                            label.relativePosition = new Vector3(14 + (col * 230), y + s);
+                            resBar.Value.relativePosition = new Vector3(120 + (col * 230), y);
+                            resBar.Value.size = new Vector2(100, 16);
+                            y += resBar.Value.size.y + s;
+                            break;
                     }
-                    else
+                    SetProgress(resBar.Value, (float)value, 0, 100, raw, max);
+                    if (onFactor == halfNumFactors)
                     {
-                        resBar.Value.size = new Vector2((float)(barWidth * -factor / totalNegativeFactor), 16);
-                        label.relativePosition = new Vector3(negativeX, 56);
-                        resBar.Value.relativePosition = new Vector3(negativeX, 36);
-                        negativeX += resBar.Value.size.x;
-                        resBar.Value.progressColor = Color.red;                        
+                        col = 1;
+                        x = 14;
+                        y = newTop;
+                        if (ModConfig.Instance.Display == ModConfig.DisplayCategory.Compact)
+                            newTop += ((s * 3) + 16) * col;
                     }
-                    SetProgress(resBar.Value, (float)value, 0, 100, raw, max);                
+                    maxHeight = Math.Max(y, maxHeight);
                 }
             }
-
-            if (levelUpHelper.GetPollutionFactor(zone) < 0)
+            switch (ModConfig.Instance.Display)
             {
-                var value = levelUpHelper.GetPollutionScore(data, zone);
-                var factor = levelUpHelper.GetPollutionFactor(zone);
+                case ModConfig.DisplayCategory.Compact:
+                    maxHeight = newTop + 16 + s * 4;
+                    break;
+                case ModConfig.DisplayCategory.Extended:
+                    maxHeight = maxHeight + s;
+                    break;
+            };
 
-                pollutionBar.size = new Vector2((float)(barWidth * -(factor * pollutionBarWidthMult) / totalNegativeFactor), 16);
-                pollutionLabel.relativePosition = new Vector3(negativeX, 56);
-                SetProgress(pollutionBar, (float)value, 0, 100);
-                pollutionBar.relativePosition = new Vector3(negativeX, 36);
-                negativeX += pollutionBar.size.x;
-
-                pollutionBar.Show();
-                pollutionLabel.Show();
-            }
-            else
-            {
-                pollutionBar.Hide();
-                pollutionLabel.Hide();
-            }
-
-            x = 14f;
-            float y = 70f;
-            SetProgress(serviceBar, levelUpHelper.GetProperServiceScore(buildingId), levelUpHelper.GetServiceThreshhold((ItemClass.Level)(Math.Max(-1, (int)data.Info.m_class.m_level - 1)), zone), levelUpHelper.GetServiceThreshhold(data.Info.m_class.m_level, zone));
-            SetPos(serviceLabel, serviceBar, x, y, true);
-
-            if (zone == ItemClass.Zone.ResidentialHigh || zone == ItemClass.Zone.ResidentialLow || zone == ItemClass.Zone.CommercialHigh || zone == ItemClass.Zone.CommercialLow)
-            {
-                serviceLabel.text = Localization.Get(LocalizationCategory.BuildingInfo, "LandValueProgress");
-            }
-            else
-            {
-                serviceLabel.text = Localization.Get(LocalizationCategory.BuildingInfo, "Service");
-            }
-            y += vertPadding;
-
-            float education;
-            float happy;
-            float commute;
-            levelUpHelper.GetEducationHappyScore(buildingId, out education, out happy, out commute);
-
-            SetProgress(educationBar, education, levelUpHelper.GetEducationThreshhold((ItemClass.Level)(Math.Max(-1, (int)data.Info.m_class.m_level - 1)), zone), levelUpHelper.GetEducationThreshhold(data.Info.m_class.m_level, zone));
-            SetPos(educationLabel, educationBar, x, y, true);
-            y += vertPadding;
-
-
-            if (zone == ItemClass.Zone.CommercialHigh || zone == ItemClass.Zone.CommercialLow)
-            {
-                educationLabel.text = Localization.Get(LocalizationCategory.BuildingInfo, "Wealth");
-            }
-            else
-            {
-                educationLabel.text = Localization.Get(LocalizationCategory.BuildingInfo, "Education");
-            }
-
-            SetProgress(happyBar, happy, 0, 100);
-            SetPos(happyLabel, happyBar, x, y, true);
-            y += vertPadding;
-
-            if (this.baseBuildingWindow != null)
+            if (baseBuildingWindow != null)
             {
                 if (buildingName == null)
                 {
-                    this.buildingName = this.baseBuildingWindow.Find<UITextField>("BuildingName");
-                    this.buildingName.maxLength = 50;
-                    this.buildingName.textScale = 0.87f;
+                    buildingName = baseBuildingWindow.Find<UITextField>("BuildingName");
+                    buildingName.maxLength = 50;
+                    buildingName.textScale = 0.87f;
                 }
                 if (buildingName != null)
                 {
-                    var bName = this.buildingName.text;
-                    if (EB_Options.Instance.enableNames)
+                    var bName = buildingName.text;
+                    if (ModConfig.Instance.EnableNames)
                     {
-                        if ((data.m_flags & Building.Flags.CustomName) == Building.Flags.None && !this.buildingName.hasFocus)
+                        if ((data.m_flags & Building.Flags.CustomName) == Building.Flags.None && !buildingName.hasFocus)
                         {
                             bName = GetName(buildingId, zone, data.Info.m_class.m_subService);
-                            this.buildingName.text = bName;
+                            buildingName.text = bName;
                         }
                     }
 
-                    if (EB_Options.Instance.enableDescriptions)
+                    if (ModConfig.Instance.EnableDescriptions)
                     {
-                        y += 12;
-
-                        var desc = GetDescription(bName, buildingId, zone, data.Info.m_class.m_subService);
-                        descriptionLabel.text = desc;
+                        descriptionLabel.text = GetDescription(bName, buildingId, zone, data.Info.m_class.m_subService);
                         descriptionLabel.Show();
-                        descriptionLabel.relativePosition = new Vector3(x, y);
-                        y += descriptionLabel.height + 10;
+                        descriptionLabel.relativePosition = new Vector3(14, maxHeight);
+                        maxHeight += descriptionLabel.height + s * 2;
                     }
                     else
-                    {
                         descriptionLabel.Hide();
-                    }
                 }
             }
-            height = y;
+            height = maxHeight;
         }
 
         private string GetDescription(string bName, ushort buildingId, ItemClass.Zone zone, ItemClass.SubService ss)
         {
             Randomizer randomizer = new Randomizer(Singleton<SimulationManager>.instance.m_metaData.m_gameInstanceIdentifier.GetHashCode() - buildingId);
             var year = 2015 - buildingId % 200;
-            Markov markov = null;
-            if (!this.buildingDescriptions.TryGetValue(ss.ToString(), out markov))
-            {
-                this.buildingDescriptions.TryGetValue(zone.ToString(), out markov);
-            }
+            if (!buildingDescriptions.TryGetValue(ss.ToString(), out Markov markov))
+                buildingDescriptions.TryGetValue(zone.ToString(), out markov);
+
             if (markov != null)
             {
                 var text = markov.GetText(ref randomizer, 100, 200, true);
@@ -430,63 +389,45 @@
             Randomizer randomizer = new Randomizer(Singleton<SimulationManager>.instance.m_metaData.m_gameInstanceIdentifier.GetHashCode() - buildingId);
             if (buildingId % 6 != 0)
             {
-                Markov markov = null;
-                if (!this.buildingNames.TryGetValue(ss.ToString(), out markov))
-                {
-                    this.buildingNames.TryGetValue(zone.ToString(), out markov);
-                }
+                if (!buildingNames.TryGetValue(ss.ToString(), out Markov markov))
+                    buildingNames.TryGetValue(zone.ToString(), out markov);
+
                 if (markov != null)
-                {
                     return markov.GetText(ref randomizer, 6, 16, true, true);
-                }
             }
-            return this.buildingName.text;
+            return buildingName.text;
         }
 
         private void SetProgress(UIProgressBar serviceBar, float val, float start, float target, int raw = -1, int max = -1)
         {
             var extraTip = "";
             if (target == int.MaxValue)
-            {
                 extraTip = Localization.Get(LocalizationCategory.BuildingInfo, "Max");
-            }
             else if (raw != -1)
-            {
                 extraTip = raw.ToString("F0") + "/" + max.ToString("F0");
-            }
             else if (start == 0)
-            {
                 extraTip = val.ToString("F0") + "/" + target.ToString("F0");
-            }
             else
-            {
                 extraTip = start.ToString("F0") + "/" + val.ToString("F0") + "/" + target.ToString("F0");
-            }
 
-            var lastIndex = serviceBar.tooltip.LastIndexOf(' ');
-            if (lastIndex > 0)
-            {
-                serviceBar.tooltip = serviceBar.tooltip.Substring(0, lastIndex) + " " + extraTip;
-            }
-            else
-            {
-                serviceBar.tooltip = extraTip;
-            }
+            serviceBar.tooltip = serviceBar.tooltip.LastIndexOf(' ') > 0
+                ? serviceBar.tooltip.Substring(0, serviceBar.tooltip.LastIndexOf(' ')) + " " + extraTip
+                : extraTip;
+
             if (target == int.MaxValue)
             {
                 target = start;
                 start -= 20;
             }
-            serviceBar.value = Mathf.Clamp((val - start) / (target - start), 0f, 1f);
+            serviceBar.value = Mathf.Clamp01((val - start) / (target - start));
         }
 
         private InstanceID GetParentInstanceId()
         {
             if (baseSub == null)
-            {
-                baseSub = this.baseBuildingWindow.GetType().GetField("m_InstanceID", BindingFlags.NonPublic | BindingFlags.Instance);
-            }
-            return (InstanceID)baseSub.GetValue(this.baseBuildingWindow);
+                baseSub = baseBuildingWindow.GetType().GetField("m_InstanceID", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            return (InstanceID)baseSub.GetValue(baseBuildingWindow);
         }
     }
 }
