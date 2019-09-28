@@ -1,8 +1,9 @@
-using ColossalFramework.Globalization;
+﻿using ColossalFramework.Globalization;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEngine;
 
 namespace ExtendedBuildings
 {
@@ -18,14 +19,16 @@ namespace ExtendedBuildings
         private static Dictionary<string, string> texts;
         private static string[] manifestResourceNames;
         private static readonly string locale;
+        private static readonly System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
 
         static Localization()
         {
             locale = LocaleManager.instance.language;
             if (locale == null)
                 locale = "en";
-            manifestResourceNames = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceNames();
-                    SetText();
+            assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            manifestResourceNames = assembly.GetManifestResourceNames();
+            SetText();
         }
 
         public static string Get(LocalizationCategory cat, string name)
@@ -50,36 +53,25 @@ namespace ExtendedBuildings
             foreach (var line in res)
             {
                 if (line == null || line.Trim().Length == 0)
-                {
                     continue;
-                }
-                
+
                 var firstSpace = line.Trim().IndexOf(' ');
                 if (firstSpace == -1)
-                {
                     header = line.Trim().Replace(":", "").ToLower();
-                }
                 else
-                {
                     texts.Add(header + "_" + line.Substring(0, firstSpace).ToLower(), line.Substring(firstSpace + 1).Trim());
-                }                
             }
         }
 
         private static string GetResource(string resourceName)
         {
-            var assembly = Assembly.GetExecutingAssembly();
-            var locale = LocaleManager.instance.language;
-            if (locale == null)
+            var rn = String.Format("ExtendedBuildings.Localization.{0}.{1}.txt", locale.Trim().ToLower(), resourceName);
+            if (!manifestResourceNames.Contains(rn))
             {
-                locale = "en";
+                Debug.Log(string.Format("Embedded resource {0} not found. Reverting to English.", rn));
+                rn = String.Format("ExtendedBuildings.Localization.{0}.{1}.txt", "en", resourceName);
             }
 
-            var rn = String.Format("ExtendedBuildings.Localization.{0}.{1}.txt", locale.Trim().ToLower(), resourceName);
-            if (!assembly.GetManifestResourceNames().Contains(rn))
-            {
-                rn = String.Format("ExtendedBuildings.Localization.{0}.{1}.txt", "en", resourceName);
-            }            
             using (Stream stream = assembly.GetManifestResourceStream(rn))
             {
                 using (StreamReader reader = new StreamReader(stream))
