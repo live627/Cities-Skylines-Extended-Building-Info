@@ -1,8 +1,9 @@
-namespace ExtendedBuildings
+﻿namespace ExtendedBuildings
 {
     using ColossalFramework;
     using ColossalFramework.Math;
     using ColossalFramework.UI;
+    using ICities;
     using System;
     using System.Collections.Generic;
     using System.Reflection;
@@ -35,11 +36,16 @@ namespace ExtendedBuildings
         {
             resourceBars = new Dictionary<ImmaterialResourceManager.Resource, UIProgressBar>(20);
             resourceLabels = new Dictionary<ImmaterialResourceManager.Resource, UILabel>(20);
-            var resNaames = Enum.GetNames(typeof(ImmaterialResourceManager.Resource));
-            for (var i = 0; i < 20; i += 1)
+            var resNames = Enum.GetNames(typeof(ImmaterialResourceManager.Resource));
+            for (var i = 0; i < 27; i += 1)
             {
                 var res = (ImmaterialResourceManager.Resource)i;
-                if (res != ImmaterialResourceManager.Resource.Abandonment && res != ImmaterialResourceManager.Resource.NoisePollution)
+                if (res != ImmaterialResourceManager.Resource.Abandonment && res != ImmaterialResourceManager.Resource.NoisePollution
+                    || Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.NaturalDisasters)
+                    && res != ImmaterialResourceManager.Resource.DisasterCoverage
+                    && res != ImmaterialResourceManager.Resource.RadioCoverage
+                    || Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.Parks)
+                    && res != ImmaterialResourceManager.Resource.TourCoverage)
                 {
                     var bar = AddUIComponent<UIProgressBar>();
                     bar.backgroundSprite = "LevelBarBackground";
@@ -47,6 +53,7 @@ namespace ExtendedBuildings
                     resourceBars.Add(res, bar);
                     var label = AddUIComponent<UILabel>();
                     tooltips[i] = Localization.Get(LocalizationCategory.BuildingInfo, resNames[i]);
+                    label.text = Localization.Get(LocalizationCategory.BuildingInfo, resNames[i]);
                     label.textScale = 0.5f;
                     label.size = new Vector2(100, 20);
                     resourceLabels.Add(res, label);
@@ -59,8 +66,8 @@ namespace ExtendedBuildings
                 "Service", 
                 "Education",
                 "Happiness",
-                resNaames[8], // Noise
-                resNaames[18], // Abandonment
+                resNames[8], // Noise
+                resNames[18], // Abandonment
                 "Pollution"
             };
             var adesc = new string[]
@@ -68,8 +75,8 @@ namespace ExtendedBuildings
                 "ServiceDescription", 
                 "EducationDescription",
                 "HappinessDescription",
-                resNaames[8], // Noise
-                resNaames[18], // Abandonment
+                resNames[8], // Noise
+                resNames[18], // Abandonment
                 "Pollution"
             };
             for (var i = 0; i < 6; i += 1)
@@ -77,13 +84,9 @@ namespace ExtendedBuildings
                 var bar = AddUIComponent<UIProgressBar>();
                 bar.backgroundSprite = "LevelBarBackground";
                 bar.progressSprite = "LevelBarForeground";
-                bar.progressColor = i < 4 ? Color.green : Color.red;
-                bar.minValue = 0f;
-                bar.maxValue = 1f;
-                bar.tooltip = Localization.Get(LocalizationCategory.BuildingInfo, adesc[i]) + " 0/0";
                 aresourceBars.Add(bar);
                 var label = AddUIComponent<UILabel>();
-                label.tooltip = Localization.Get(LocalizationCategory.BuildingInfo, adesc[i]);
+                tooltips[i + 26] = Localization.Get(LocalizationCategory.BuildingInfo, adesc[i]);
                 label.text = Localization.Get(LocalizationCategory.BuildingInfo, ares[i]);
                 label.textScale = 0.75f;
                 label.size = new Vector2(100, 20);
