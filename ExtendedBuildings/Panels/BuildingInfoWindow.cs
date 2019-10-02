@@ -79,7 +79,7 @@ namespace ExtendedBuildings
                 var bar = AddUIComponent<UIProgressBar>();
                 bar.backgroundSprite = "LevelBarBackground";
                 bar.progressSprite = "LevelBarForeground";
-                bar.progressColor = i < 4 ? Color.green : Color.red;
+                bar.progressColor = i < 3 ? Color.green : Color.red;
                 bar.minValue = 0f;
                 bar.maxValue = 1f;
                 bar.tooltip = Localization.Get(LocalizationCategory.BuildingInfo, adesc[i]) + " 0/0";
