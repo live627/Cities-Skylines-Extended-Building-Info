@@ -1,4 +1,4 @@
-﻿namespace ExtendedBuildings
+namespace ExtendedBuildings
 {
     using ColossalFramework;
     using ColossalFramework.Math;
@@ -27,7 +27,7 @@
         ushort selectedBuilding;
         private List<UIProgressBar> aresourceBars;
         private List<UILabel> aresourceLabels;
-
+        private string[] tooltips = new string[31];
         public static bool ShowDescription { get; set; } = true;
         public static bool ShowName { get; set; } = true;
 
@@ -47,7 +47,7 @@
                     bar.progressColor = Color.green;
                     resourceBars.Add(res, bar);
                     var label = AddUIComponent<UILabel>();
-                    label.text = Localization.Get(LocalizationCategory.BuildingInfo, resNaames[i]);
+                    tooltips[i] = Localization.Get(LocalizationCategory.BuildingInfo, resNames[i]);
                     label.textScale = 0.5f;
                     label.size = new Vector2(100, 20);
                     resourceLabels.Add(res, label);
@@ -247,6 +247,7 @@
                         SetProgress(resBar, (float)levelUpHelper.GetPollutionScore(data, zone), 0, 100);
                         break;
                 }
+                resBar.tooltip = string.Format("{0} ({1:P0})", tooltips[onFactor + 26], resBar.value);
                 if (onFactor == 2)
                 {
                     col = 1;
@@ -312,6 +313,7 @@
                             break;
                     }
                     SetProgress(resBar.Value, (float)value, 0, 100, raw, max);
+                    resBar.Value.tooltip = string.Format("{0} ({1:P0})", tooltips[(int)resBar.Key], resBar.Value.value);
                     if (onFactor == halfNumFactors)
                     {
                         col = 1;
