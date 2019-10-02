@@ -1,9 +1,5 @@
 ﻿using ColossalFramework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
 
 namespace ExtendedBuildings
 {
@@ -15,32 +11,17 @@ namespace ExtendedBuildings
             get
             {
                 if (m_instance == null)
-                {
                     m_instance = new LevelUpHelper3();
-                }
                 return m_instance;
             }
         }
 
         public double GetPollutionFactor(ItemClass.Zone zone)
-        {
-            if (zone == ItemClass.Zone.ResidentialHigh || zone == ItemClass.Zone.ResidentialLow)
-            {
-                return -0.2;
-            }
-            else if (zone == ItemClass.Zone.Office)
-            {
-                return -0.25;
-            }
-            else
-            {
-                return -0.1667;
-            }            
-        }
+            => zone == ItemClass.Zone.ResidentialHigh || zone == ItemClass.Zone.ResidentialLow
+                ? -0.2 : zone == ItemClass.Zone.Office ? -0.25 : -0.1667;
 
         public double GetFactor(ItemClass.Zone zone, ImmaterialResourceManager.Resource resource)
         {
-
             if (zone == ItemClass.Zone.Industrial)
             {
                 switch (resource)
@@ -116,45 +97,38 @@ namespace ExtendedBuildings
 
         public double GetPollutionScore(Building data, ItemClass.Zone zone)
         {
-            byte resourceRate13;
-            Singleton<NaturalResourceManager>.instance.CheckPollution(data.m_position, out resourceRate13);
-            return ImmaterialResourceManager.CalculateResourceEffect((int)resourceRate13, 50, 255, 50, 100);
+            Singleton<NaturalResourceManager>.instance.CheckPollution(data.m_position, out byte resourceRate13);
+            return ImmaterialResourceManager.CalculateResourceEffect(resourceRate13, 50, 255, 50, 100);
         }
 
         public double GetServiceScore(int resourceRate, ImmaterialResourceManager.Resource resource, ItemClass.Zone zone,ref int maxLimit)
         {
-            if (zone == ItemClass.Zone.ResidentialHigh || zone == ItemClass.Zone.ResidentialLow || zone == ItemClass.Zone.CommercialHigh || zone == ItemClass.Zone.CommercialLow){
+            if (zone == ItemClass.Zone.ResidentialHigh || zone == ItemClass.Zone.ResidentialLow || zone == ItemClass.Zone.CommercialHigh || zone == ItemClass.Zone.CommercialLow)
                 switch (resource)
                 {
                     case ImmaterialResourceManager.Resource.NoisePollution:
                     case ImmaterialResourceManager.Resource.CrimeRate:
                         maxLimit = 100;
                         return ImmaterialResourceManager.CalculateResourceEffect(resourceRate, 10, 100, 0, 100);
-                    
                     case ImmaterialResourceManager.Resource.FireHazard:
                         maxLimit = 100;
-                        return ImmaterialResourceManager.CalculateResourceEffect(resourceRate, 50,100,10,50);
+                        return ImmaterialResourceManager.CalculateResourceEffect(resourceRate, 50, 100, 10, 50);
                     case ImmaterialResourceManager.Resource.Abandonment:
                         maxLimit = 50;
                         return ImmaterialResourceManager.CalculateResourceEffect(resourceRate, 15, 50, 100, 200);
                 }
-            }
+
             maxLimit = 500;
             return ImmaterialResourceManager.CalculateResourceEffect(resourceRate, 100, 500, 50, 100);
         }
 
-        public double GetServiceScore(ImmaterialResourceManager.Resource resource, ItemClass.Zone zone, ushort[] array, int num,ref int rawValue, ref int maxLimit)
-        {
-            rawValue = array[num + (int)resource];
-            return GetServiceScore(rawValue, resource, zone, ref maxLimit);
-        }
+        public double GetServiceScore(ImmaterialResourceManager.Resource resource, ItemClass.Zone zone, ushort[] array, int num, ref int rawValue, ref int maxLimit)
+            => GetServiceScore(array[num + (int)resource], resource, zone, ref maxLimit);
 
         public int GetProperServiceScore(ushort buildingID)
         {
-            Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)buildingID];
-            ushort[] array;
-            int num;
-            Singleton<ImmaterialResourceManager>.instance.CheckLocalResources(data.m_position, out array, out num);
+            Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
+            Singleton<ImmaterialResourceManager>.instance.CheckLocalResources(data.m_position, out ushort[] array, out int num);
             double num2 = 0;
             var zone = data.Info.m_class.GetZone();
             for (var i = 0; i < 20; i += 1)
@@ -162,7 +136,7 @@ namespace ExtendedBuildings
                 int max = 0;
                 int raw = 0;
                 var imr = (ImmaterialResourceManager.Resource)i;
-                num2 += GetServiceScore(imr, zone, array, num,ref raw,  ref max) * GetFactor(zone, imr);
+                num2 += GetServiceScore(imr, zone, array, num, ref raw, ref max) * GetFactor(zone, imr);
             }
 
             num2 -= GetPollutionScore(data, zone) * GetPollutionFactor(zone);
@@ -173,7 +147,7 @@ namespace ExtendedBuildings
         public void GetEducationHappyScore(ushort buildingID, out float education, out float happy, out float commute)
         {
             Citizen.BehaviourData behaviour = default(Citizen.BehaviourData);
-            Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[(int)buildingID];
+            Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
             ItemClass.Zone zone = data.Info.m_class.GetZone();
 
             commute = 0;
@@ -241,169 +215,53 @@ namespace ExtendedBuildings
         
         public int GetServiceThreshhold(ItemClass.Level level, ItemClass.Zone zone)
         {
+            if (level == ItemClass.Level.None)
+                return 0;
+
+            ItemClass.Level maxLevel = ItemClass.Level.Level5;
+            int multiplier = 0, start = 0;
             switch (zone)
             {
-                case ItemClass.Zone.Office:
-                    if (level == ItemClass.Level.None)
-                    {
-                        return 0;
-                    }
-                    else if (level == ItemClass.Level.Level1)
-                    {
-                            return 45;
-                    }
-                    else if (level == ItemClass.Level.Level2)
-                    {
-                            return 90;
-                        
-                    }
-                    else
-                    {
-                        return int.MaxValue;
-                    }
-                case ItemClass.Zone.Industrial:
-                    if (level == ItemClass.Level.None)
-                    {
-                        return 0;
-                    }
-                    else if (level == ItemClass.Level.Level1)
-                    {                        
-                            return 30;                       
-                    }
-                    else if (level == ItemClass.Level.Level2)
-                    {
-                            return 60;
-                    }
-                    else
-                    {
-                        return int.MaxValue;
-                    }
                 case ItemClass.Zone.ResidentialLow:
                 case ItemClass.Zone.ResidentialHigh:
-                    if (level == ItemClass.Level.None)
-                    {
-                        return 0;
-                    }
-                    else if (level == ItemClass.Level.Level1)
-                    {
-                            return 6;
-                    }
-                    else if (level == ItemClass.Level.Level2)
-                    {
-                        return 21;
-                    }
-
-                    else if (level == ItemClass.Level.Level3)
-                    {
-                            return 41;
-                    }
-
-                    else if (level == ItemClass.Level.Level4)
-                    {
-                        return 61;
-                    }
-                    else
-                    {
-                        return int.MaxValue;
-                    }
+                    multiplier = 15;
+                    break;
                 case ItemClass.Zone.CommercialLow:
                 case ItemClass.Zone.CommercialHigh:
-                    if (level == ItemClass.Level.None)
-                    {
-                        return 0;
-                    }
-                    else if (level == ItemClass.Level.Level1)
-                    {
-                            return 21;
-                    }
-                    else if (level == ItemClass.Level.Level2)
-                    {
-                            return 41;
-                    }
-                    else
-                    {
-                        return int.MaxValue;
-                    }                    
+                    start = 1;
+                    multiplier = 20;
+                    break;
+                case ItemClass.Zone.Industrial:
+                    multiplier = 30;
+                    break;
+                case ItemClass.Zone.Office:
+                    multiplier = 45;
+                    break;
             }
-            return int.MaxValue;
+            if (level == maxLevel)
+                return int.MaxValue;
+
+            return ((int)level + 1) * multiplier + start;
         }
 
         public int GetEducationThreshhold(ItemClass.Level level, ItemClass.Zone zone)
         {
             if (level == ItemClass.Level.None)
-            {
                 return 0;
-            }
-            if (zone == ItemClass.Zone.ResidentialHigh || zone == ItemClass.Zone.ResidentialLow)
-            {
-                if (level == ItemClass.Level.Level1)
-                {
 
-                    return 15;
-                }
-                else if (level == ItemClass.Level.Level2)
-                {
-                    return 30;
-                }
-                else if (level == ItemClass.Level.Level3)
-                {
-                    return 45;
-                }
-                else if (level == ItemClass.Level.Level4)
-                {
-                    return 60;
-                }
-                else
-                {
-                    return int.MaxValue;
-                }
-            }
-            else if (zone == ItemClass.Zone.Industrial)
+            ItemClass.Level maxLevel = ItemClass.Level.Level5;
+            int start = 0;
+            switch (zone)
             {
-                if (level == ItemClass.Level.Level1)
-                {
-                    return 15;
-                }
-                else if (level == ItemClass.Level.Level2)
-                {
-                    return 30;
-                }
-                else
-                {
-                    return int.MaxValue;
-                }
+                case ItemClass.Zone.CommercialLow:
+                case ItemClass.Zone.CommercialHigh:
+                    start = 15;
+                    break;
             }
-            else if (zone == ItemClass.Zone.CommercialLow || zone == ItemClass.Zone.CommercialHigh)
-            {
-                if (level == ItemClass.Level.Level1)
-                {
-                    return 30;
-                }
-                else if (level == ItemClass.Level.Level2)
-                {
-                    return 45;
-                }
-                else
-                {
-                    return int.MaxValue;
-                }
-            }
-            else
-            {
+            if (level == maxLevel)
+                return int.MaxValue;
 
-                if (level == ItemClass.Level.Level1)
-                {
-                    return 15;
-                }
-                else if (level == ItemClass.Level.Level2)
-                {
-                    return 30;
-                }
-                else
-                {
-                    return int.MaxValue;
-                }
-            }
+            return ((int)level + 1) * 15 + start;
         }
     }
 }

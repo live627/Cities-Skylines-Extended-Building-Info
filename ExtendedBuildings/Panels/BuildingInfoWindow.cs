@@ -44,7 +44,6 @@ namespace ExtendedBuildings
                     var bar = AddUIComponent<UIProgressBar>();
                     bar.backgroundSprite = "LevelBarBackground";
                     bar.progressSprite = "LevelBarForeground";
-                    bar.progressColor = Color.green;
                     resourceBars.Add(res, bar);
                     var label = AddUIComponent<UILabel>();
                     tooltips[i] = Localization.Get(LocalizationCategory.BuildingInfo, resNames[i]);
@@ -205,32 +204,34 @@ namespace ExtendedBuildings
                             || zone == ItemClass.Zone.CommercialLow
                             ? Localization.Get(LocalizationCategory.BuildingInfo, "LandValueProgress")
                             : Localization.Get(LocalizationCategory.BuildingInfo, "Service");
-                        SetProgress(resBar,
+                        SetProgress(
+                            resBar,
                             levelUpHelper.GetProperServiceScore(buildingId),
                             levelUpHelper.GetServiceThreshhold((ItemClass.Level)(Math.Max(-1, (int)data.Info.m_class.m_level - 1)), zone),
-                            levelUpHelper.GetServiceThreshhold(data.Info.m_class.m_level, zone));
+                            levelUpHelper.GetServiceThreshhold(data.Info.m_class.m_level, zone),
+                            true);
                         break;
                     case 1:
                         SetProgress(
                             resBar,
                             education,
                             levelUpHelper.GetEducationThreshhold((ItemClass.Level)(Math.Max(-1, (int)data.Info.m_class.m_level - 1)), zone),
-                            levelUpHelper.GetEducationThreshhold(data.Info.m_class.m_level, zone));
+                            levelUpHelper.GetEducationThreshhold(data.Info.m_class.m_level, zone),
+                            true);
                         label.text = zone == ItemClass.Zone.CommercialHigh || zone == ItemClass.Zone.CommercialLow
                             ? Localization.Get(LocalizationCategory.BuildingInfo, "Wealth")
                             : Localization.Get(LocalizationCategory.BuildingInfo, "Education");
                         break;
                     case 2:
                         label.text = Localization.Get(LocalizationCategory.BuildingInfo, "Happiness");
-
-                        SetProgress(resBar, happy, 0, 100);
+                        SetProgress(resBar, happy, 0, 100, true);
                         break;
                     case 3:
                         {
                             int max = 0;
                             int raw = 0;
                             var value = levelUpHelper.GetServiceScore(ImmaterialResourceManager.Resource.NoisePollution, zone, array, num, ref raw, ref max);
-                            SetProgress(resBar, (float)value, 0, 100, raw, max);
+                            SetProgress(resBar, (float)value, 0, 100, false);
                             break;
                         }
                     case 4:
@@ -238,13 +239,11 @@ namespace ExtendedBuildings
                             int max = 0;
                             int raw = 0;
                             var value = levelUpHelper.GetServiceScore(ImmaterialResourceManager.Resource.Abandonment, zone, array, num, ref raw, ref max);
-                            SetProgress(resBar, (float)value, 0, 100, raw, max);
+                            SetProgress(resBar, (float)value, 0, 100, false);
                             break;
                         }
                     case 5:
-                        var factor = levelUpHelper.GetPollutionFactor(zone);
-
-                        SetProgress(resBar, (float)levelUpHelper.GetPollutionScore(data, zone), 0, 100);
+                        SetProgress(resBar, (float)levelUpHelper.GetPollutionScore(data, zone), 0, 100, false);
                         break;
                 }
                 resBar.tooltip = string.Format("{0} ({1:P0})", tooltips[onFactor + 26], resBar.value);
@@ -257,23 +256,12 @@ namespace ExtendedBuildings
             }
             
             int numFactors = 0;
-            double totalFactor = 0;
-            double totalNegativeFactor = 0;
-            float pollutionBarWidthMult = 2.5f, newTop = maxHeight;
+            float newTop = maxHeight;
             foreach (var resBar in resourceBars)
             {
-                var factor = levelUpHelper.GetFactor(zone, resBar.Key);
-                if (factor != 0)
+                if (levelUpHelper.GetFactor(zone, resBar.Key) != 0)
                     numFactors++;
-                if (factor > 0)
-                    totalFactor += levelUpHelper.GetFactor(zone, resBar.Key);
-                else
-                {
-                    resBar.Value.progressColor = Color.red;
-                    totalNegativeFactor -= levelUpHelper.GetFactor(zone, resBar.Key);
-                }
             }
-            totalNegativeFactor -= levelUpHelper.GetPollutionFactor(zone) * pollutionBarWidthMult;
 
             y = newTop;
             int halfNumFactors = Mathf.CeilToInt(numFactors / 2);
@@ -312,7 +300,7 @@ namespace ExtendedBuildings
                             y += resBar.Value.size.y + s;
                             break;
                     }
-                    SetProgress(resBar.Value, (float)value, 0, 100, raw, max);
+                    SetProgress(resBar.Value, (float)value, 0, 100, factor > 0);
                     resBar.Value.tooltip = string.Format("{0} ({1:P0})", tooltips[(int)resBar.Key], resBar.Value.value);
                     if (onFactor == halfNumFactors)
                     {
@@ -400,28 +388,16 @@ namespace ExtendedBuildings
             return buildingName.text;
         }
 
-        private void SetProgress(UIProgressBar serviceBar, float val, float start, float target, int raw = -1, int max = -1)
+        private void SetProgress(UIProgressBar serviceBar, float val, float start, float target, bool isPositive)
         {
-            var extraTip = "";
-            if (target == int.MaxValue)
-                extraTip = Localization.Get(LocalizationCategory.BuildingInfo, "Max");
-            else if (raw != -1)
-                extraTip = raw.ToString("F0") + "/" + max.ToString("F0");
-            else if (start == 0)
-                extraTip = val.ToString("F0") + "/" + target.ToString("F0");
+            float finalValue = (val - start) / (target - start);
+            serviceBar.tooltip = string.Format(serviceBar.tooltip, LocaleFormatter.FormatPercentage((int)(finalValue * 100)));
+            if (isPositive)
+                serviceBar.progressColor = Color.Lerp(Color.yellow, Color.green, finalValue);
             else
-                extraTip = start.ToString("F0") + "/" + val.ToString("F0") + "/" + target.ToString("F0");
+                serviceBar.progressColor = Color.Lerp(Color.yellow, Color.red, finalValue);
 
-            serviceBar.tooltip = serviceBar.tooltip.LastIndexOf(' ') > 0
-                ? serviceBar.tooltip.Substring(0, serviceBar.tooltip.LastIndexOf(' ')) + " " + extraTip
-                : extraTip;
-
-            if (target == int.MaxValue)
-            {
-                target = start;
-                start -= 20;
-            }
-            serviceBar.value = Mathf.Clamp01((val - start) / (target - start));
+            serviceBar.value = Mathf.Clamp01(finalValue);
         }
 
         private InstanceID GetParentInstanceId()
