@@ -105,8 +105,13 @@ namespace ExtendedBuildings
                 && (res == ImmaterialResourceManager.Resource.DisasterCoverage
                 || res == ImmaterialResourceManager.Resource.EarthquakeCoverage
                 || res == ImmaterialResourceManager.Resource.FirewatchCoverage
-                || res == ImmaterialResourceManager.Resource.RadioCoverage)
+                || res == ImmaterialResourceManager.Resource.RadioCoverage);
+
+        private static bool CanShowZonedResource(ImmaterialResourceManager.Resource res, ItemClass.Zone zone)
+            => zone != ItemClass.Zone.ResidentialLow && zone != ItemClass.Zone.ResidentialHigh
+                && res == ImmaterialResourceManager.Resource.CargoTransport
                 || Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.Parks)
+                && (zone == ItemClass.Zone.ResidentialLow || zone == ItemClass.Zone.ResidentialHigh)
                 && (res == ImmaterialResourceManager.Resource.Attractiveness
                 || res == ImmaterialResourceManager.Resource.TourCoverage);
 
@@ -271,7 +276,7 @@ namespace ExtendedBuildings
             float newTop = maxHeight;
             foreach (var resBar in resourceBars)
             {
-                if (levelUpHelper.GetFactor(zone, resBar.Key) != 0)
+                if (CanShowZonedResource(resBar.Key, zone))
                     numFactors++;
             }
 
@@ -284,16 +289,7 @@ namespace ExtendedBuildings
                 onFactor++;
 
                 var label = resourceLabels[resBar.Key];
-                var factor = levelUpHelper.GetFactor(zone, resBar.Key);
-                if (factor == 0)
                 {
-                    label.Hide();
-                    resBar.Value.Hide();
-                }
-                else
-                {
-                    label.Show();
-                    resBar.Value.Show();
                     int max = 0;
                     int raw = 0;
                     var value = levelUpHelper.GetServiceScore(resBar.Key, zone, array, num, ref raw, ref max);

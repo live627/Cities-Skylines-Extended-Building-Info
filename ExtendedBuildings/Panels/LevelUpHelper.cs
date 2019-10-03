@@ -20,6 +20,11 @@ namespace ExtendedBuildings
             => zone == ItemClass.Zone.ResidentialHigh || zone == ItemClass.Zone.ResidentialLow
                 ? -0.2 : zone == ItemClass.Zone.Office ? -0.25 : -0.1667;
 
+        public bool IsResourcePositive(ImmaterialResourceManager.Resource resource) => resource != ImmaterialResourceManager.Resource.Abandonment
+                || resource != ImmaterialResourceManager.Resource.CrimeRate
+                || resource != ImmaterialResourceManager.Resource.FireHazard
+                || resource != ImmaterialResourceManager.Resource.NoisePollution;
+
         public double GetFactor(ItemClass.Zone zone, ImmaterialResourceManager.Resource resource)
         {
             if (zone == ItemClass.Zone.Industrial)
@@ -192,7 +197,7 @@ namespace ExtendedBuildings
                 if (alive > 0)
                 {
                     education = (num * 12 + (alive >> 1)) / alive;
-                    happy =  behaviour.m_wellbeingAccumulation / (float)alive;
+                    happy = behaviour.m_wellbeingAccumulation / (float)alive;
                     return;
                 }
             }
@@ -203,7 +208,7 @@ namespace ExtendedBuildings
                 if (alive > 0)
                 {
                     education = num = (num * 20 + (alive >> 1)) / alive;
-                    happy =  behaviour.m_wellbeingAccumulation / (float)alive;
+                    happy = behaviour.m_wellbeingAccumulation / (float)alive;
                     return;
                 }
             }
