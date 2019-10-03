@@ -195,7 +195,7 @@ namespace ExtendedBuildings
             var zone = info.m_class.GetZone();
             Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingId];
             Singleton<ImmaterialResourceManager>.instance.CheckLocalResources(data.m_position, out ushort[] array, out int num);
-            float x = 14, s = 7, y = s * 2, negativeX = 14f, maxHeight = y;
+            float x = 14, s = 7, y = s * 2, maxHeight = y;
             int col = 0, onFactor = -1;
             levelUpHelper.GetEducationHappyScore(buildingId, out float education, out float happy, out float commute);
             foreach (var resBar in aresourceBars)
@@ -255,10 +255,10 @@ namespace ExtendedBuildings
                             break;
                         }
                     case 5:
-                        SetProgress(resBar, (float)levelUpHelper.GetPollutionScore(data, zone), 0, 100, false);
+                        SetProgress(resBar, levelUpHelper.GetPollutionScore(data, zone), 0, 100, false);
                         break;
                 }
-                resBar.tooltip = string.Format("{0} ({1:P0})", tooltips[onFactor + 26], resBar.value);
+                resBar.tooltip = $"{tooltips[onFactor + 26]} ({resBar.value:P0})";
                 if (onFactor == 2)
                 {
                     col = 1;
@@ -312,8 +312,8 @@ namespace ExtendedBuildings
                             y += resBar.Value.size.y + s;
                             break;
                     }
-                    SetProgress(resBar.Value, (float)value, 0, 100, factor > 0);
-                    resBar.Value.tooltip = string.Format("{0} ({1:P0})", tooltips[(int)resBar.Key], resBar.Value.value);
+                    SetProgress(resBar.Value, (float)value, 0, 100, levelUpHelper.IsResourcePositive(resBar.Key));
+                    resBar.Value.tooltip = $"{tooltips[(int)resBar.Key]} ({resBar.Value.value:P0})";
                     if (onFactor == halfNumFactors)
                     {
                         col = 1;
@@ -400,7 +400,7 @@ namespace ExtendedBuildings
             return buildingName.text;
         }
 
-        private void SetProgress(UIProgressBar serviceBar, float val, float start, float target, bool isPositive)
+        private void  SetProgress(UIProgressBar serviceBar, float val, float start, float target, bool isPositive)
         {
             float finalValue = (val - start) / (target - start);
             serviceBar.tooltip = string.Format(serviceBar.tooltip, LocaleFormatter.FormatPercentage((int)(finalValue * 100)));

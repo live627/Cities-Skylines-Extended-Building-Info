@@ -95,7 +95,7 @@ namespace ExtendedBuildings
             return 0;
         }
 
-        public double GetPollutionScore(Building data, ItemClass.Zone zone)
+        public int GetPollutionScore(Building data, ItemClass.Zone zone)
         {
             Singleton<NaturalResourceManager>.instance.CheckPollution(data.m_position, out byte resourceRate13);
             return ImmaterialResourceManager.CalculateResourceEffect(resourceRate13, 50, 255, 50, 100);
