@@ -1,4 +1,4 @@
-﻿namespace ExtendedBuildings
+namespace ExtendedBuildings
 {
     using ColossalFramework;
     using ColossalFramework.Math;
@@ -28,7 +28,7 @@
         ushort selectedBuilding;
         private List<UIProgressBar> aresourceBars;
         private List<UILabel> aresourceLabels;
-        private string[] tooltips = new string[31];
+        private string[] tooltips = new string[32];
         public static bool ShowDescription { get; set; } = true;
         public static bool ShowName { get; set; } = true;
 
