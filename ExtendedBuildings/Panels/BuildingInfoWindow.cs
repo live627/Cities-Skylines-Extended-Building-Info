@@ -40,12 +40,7 @@ namespace ExtendedBuildings
             for (var i = 0; i < 27; i += 1)
             {
                 var res = (ImmaterialResourceManager.Resource)i;
-                if (res != ImmaterialResourceManager.Resource.Abandonment && res != ImmaterialResourceManager.Resource.NoisePollution
-                    || Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.NaturalDisasters)
-                    && res != ImmaterialResourceManager.Resource.DisasterCoverage
-                    && res != ImmaterialResourceManager.Resource.RadioCoverage
-                    || Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.Parks)
-                    && res != ImmaterialResourceManager.Resource.TourCoverage)
+                if (CanShowResource(res))
                 {
                     var bar = AddUIComponent<UIProgressBar>();
                     bar.backgroundSprite = "LevelBarBackground";
@@ -100,6 +95,20 @@ namespace ExtendedBuildings
 
             base.Awake();
         }
+
+        private static bool CanShowResource(ImmaterialResourceManager.Resource res)
+            => res != ImmaterialResourceManager.Resource.Abandonment
+                && res != ImmaterialResourceManager.Resource.Coverage
+                && res != ImmaterialResourceManager.Resource.Density
+                && res != ImmaterialResourceManager.Resource.NoisePollution
+                || Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.NaturalDisasters)
+                && (res == ImmaterialResourceManager.Resource.DisasterCoverage
+                || res == ImmaterialResourceManager.Resource.EarthquakeCoverage
+                || res == ImmaterialResourceManager.Resource.FirewatchCoverage
+                || res == ImmaterialResourceManager.Resource.RadioCoverage)
+                || Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.Parks)
+                && (res == ImmaterialResourceManager.Resource.Attractiveness
+                || res == ImmaterialResourceManager.Resource.TourCoverage);
 
         private void LoadTextFiles()
         {
