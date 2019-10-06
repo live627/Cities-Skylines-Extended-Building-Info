@@ -39,16 +39,15 @@ namespace ExtendedBuildings
 
             var buildingInfo = UIView.Find<UIPanel>("(Library) ZonedBuildingWorldInfoPanel");
             if (buildingInfo == null)
-            {
                 throw new ExtendedLoadingException("UIPanel not found (update broke the mod!): (Library) ZonedBuildingWorldInfoPanel\nAvailable panels are:\n" +
                     string.Join("  \n", UIPanelNames));
-            }
-            this.buildingWindow = buildingWindowGameObject.AddComponent<BuildingInfoWindow5>();
-            this.buildingWindow.transform.parent = buildingInfo.transform;
-            this.buildingWindow.size = new Vector3(buildingInfo.size.x, buildingInfo.size.y);
-            this.buildingWindow.baseBuildingWindow = buildingInfo.gameObject.transform.GetComponentInChildren<ZonedBuildingWorldInfoPanel>();
-            this.buildingWindow.position = new Vector3(0, 12);
-            buildingInfo.eventVisibilityChanged += buildingInfo_eventVisibilityChanged;
+
+            buildingWindow = buildingWindowGameObject.AddComponent<BuildingInfoWindow5>();
+            buildingWindow.transform.parent = buildingInfo.transform;
+            buildingWindow.size = new Vector3(buildingInfo.size.x, buildingInfo.size.y);
+            buildingWindow.baseBuildingWindow = buildingInfo.gameObject.transform.GetComponentInChildren<ZonedBuildingWorldInfoPanel>();
+            buildingWindow.position = new Vector3(0, 12);
+            buildingInfo.eventVisibilityChanged += BuildingInfo_eventVisibilityChanged;
 
             var serviceBuildingInfo = GetPanel("(Library) CityServiceWorldInfoPanel");//UIView.Find<UIPanel>("(Library) CityServiceWorldInfoPanel");
             if (serviceBuildingInfo == null)
@@ -72,32 +71,20 @@ namespace ExtendedBuildings
             if (_mode != LoadMode.LoadGame && _mode != LoadMode.NewGame)
                 return;
 
-            if (buildingWindow != null)
-            {
-                if (this.buildingWindow.parent != null)
-                {
-                    this.buildingWindow.parent.eventVisibilityChanged -= buildingInfo_eventVisibilityChanged;
-                }
-            }
+            if (buildingWindow != null && buildingWindow.parent != null)
+                buildingWindow.parent.eventVisibilityChanged -= BuildingInfo_eventVisibilityChanged;
 
             if (buildingWindowGameObject != null)
-            {
                 GameObject.Destroy(buildingWindowGameObject);
-            }
         }
 
-        void buildingInfo_eventVisibilityChanged(UIComponent component, bool value)
+        private void BuildingInfo_eventVisibilityChanged(UIComponent component, bool value)
         {
-            this.buildingWindow.isEnabled = value;
+            buildingWindow.isEnabled = value;
             if (value)
-            {
-                this.buildingWindow.Show();
-            }
+                buildingWindow.Show();
             else
-            {
-                this.buildingWindow.Hide();
-            }
+                buildingWindow.Hide();
         }
-
     }
 }

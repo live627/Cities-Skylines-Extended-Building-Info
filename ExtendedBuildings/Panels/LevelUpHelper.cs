@@ -166,7 +166,7 @@ namespace ExtendedBuildings
 
             if (zone == ItemClass.Zone.ResidentialLow || zone == ItemClass.Zone.ResidentialHigh)
             {
-                CitizenHelper.instance.GetHomeBehaviour(buildingID, data, ref behaviour, ref alive, ref total, ref COMPANYCount, ref aliveCOMPANYCount, ref emptyCOMPANY);
+                CitizenHelper.Instance.GetHomeBehaviour(buildingID, data, ref behaviour, ref alive, ref total, ref COMPANYCount, ref aliveCOMPANYCount, ref emptyCOMPANY);
                 if (alive > 0)
                 {
                     int num = behaviour.m_educated1Count + behaviour.m_educated2Count * 2 + behaviour.m_educated3Count * 3;
@@ -181,7 +181,7 @@ namespace ExtendedBuildings
             }
             else if (zone == ItemClass.Zone.CommercialHigh || zone == ItemClass.Zone.CommercialLow)
             {
-                CitizenHelper.instance.GetVisitBehaviour(buildingID, data, ref behaviour, ref alive, ref total);
+                CitizenHelper.Instance.GetVisitBehaviour(buildingID, data, ref behaviour, ref alive, ref total);
                 if (alive > 0)
                 {
                     int num = num = behaviour.m_wealth1Count + behaviour.m_wealth2Count * 2 + behaviour.m_wealth3Count * 3;
@@ -193,7 +193,7 @@ namespace ExtendedBuildings
             }
             else if (zone == ItemClass.Zone.Office)
             {
-                CitizenHelper.instance.GetWorkBehaviour(buildingID, data, ref behaviour, ref alive, ref total);
+                CitizenHelper.Instance.GetWorkBehaviour(buildingID, data, ref behaviour, ref alive, ref total);
                 int num = behaviour.m_educated1Count + behaviour.m_educated2Count * 2 + behaviour.m_educated3Count * 3;
                 if (alive > 0)
                 {
@@ -204,7 +204,7 @@ namespace ExtendedBuildings
             }
             else
             {
-                CitizenHelper.instance.GetWorkBehaviour(buildingID, data, ref behaviour, ref alive, ref total);
+                CitizenHelper.Instance.GetWorkBehaviour(buildingID, data, ref behaviour, ref alive, ref total);
                 int num = behaviour.m_educated1Count + behaviour.m_educated2Count * 2 + behaviour.m_educated3Count * 3;
                 if (alive > 0)
                 {
