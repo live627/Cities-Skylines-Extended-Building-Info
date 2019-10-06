@@ -11,7 +11,11 @@ namespace ExtendedBuildings
 
         public void OnSettingsUI(UIHelperBase helper)
         {
-            UIHelperBase group = helper.AddGroup(String.Format("{0} (v{1})", Name, typeof(Localization).Assembly.GetName().Version));
+            Version version = typeof(Localization).Assembly.GetName().Version;
+            DateTime date = new DateTime(2000, 1, 1)
+                .AddDays(version.Build)
+                .AddSeconds(version.Revision * 2);
+            UIHelperBase group = helper.AddGroup($"{Name} (v{version} - {date.ToString("MMMM dd, yyyy")})");
             group.AddDropdown("Display", Enum.GetNames(typeof(ModConfig.DisplayCategory)), (int)ModConfig.Instance.Display, sel =>
             {
                 ModConfig.Instance.Display = (ModConfig.DisplayCategory)sel;
