@@ -18,10 +18,16 @@ namespace ExtendedBuildings
     {
         private static Dictionary<string, string> texts;
         private static string[] manifestResourceNames;
-        private static readonly string locale;
-        private static readonly System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+        private static string locale;
+        private static System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
 
         static Localization()
+        {
+            OnLocaleChanged();
+            LocaleManager.eventLocaleChanged += OnLocaleChanged;
+        }
+
+        private static void OnLocaleChanged()
         {
             locale = LocaleManager.instance.language;
             if (locale == null)
