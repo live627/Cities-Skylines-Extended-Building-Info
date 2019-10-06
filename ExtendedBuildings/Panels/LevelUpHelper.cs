@@ -1,4 +1,4 @@
-﻿using ColossalFramework;
+using ColossalFramework;
 using System;
 
 namespace ExtendedBuildings
@@ -20,7 +20,8 @@ namespace ExtendedBuildings
             => zone == ItemClass.Zone.ResidentialHigh || zone == ItemClass.Zone.ResidentialLow
                 ? -0.2 : zone == ItemClass.Zone.Office ? -0.25 : -0.1667;
 
-        public bool IsResourcePositive(ImmaterialResourceManager.Resource resource) => resource != ImmaterialResourceManager.Resource.Abandonment
+        public bool IsResourcePositive(ImmaterialResourceManager.Resource resource)
+            => resource != ImmaterialResourceManager.Resource.Abandonment
                 || resource != ImmaterialResourceManager.Resource.CrimeRate
                 || resource != ImmaterialResourceManager.Resource.FireHazard
                 || resource != ImmaterialResourceManager.Resource.NoisePollution;

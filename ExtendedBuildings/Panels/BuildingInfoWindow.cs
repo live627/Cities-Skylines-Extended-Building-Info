@@ -100,16 +100,27 @@ namespace ExtendedBuildings
             => res != ImmaterialResourceManager.Resource.Abandonment
                 && res != ImmaterialResourceManager.Resource.Coverage
                 && res != ImmaterialResourceManager.Resource.Density
-                && res != ImmaterialResourceManager.Resource.NoisePollution
+                && res != ImmaterialResourceManager.Resource.NoisePollution;
+
+        private static bool CanShowZonedResource(ImmaterialResourceManager.Resource res, ItemClass.Zone zone)
+            => res == ImmaterialResourceManager.Resource.EducationElementary
+                || res == ImmaterialResourceManager.Resource.EducationHighSchool
+                || res == ImmaterialResourceManager.Resource.EducationUniversity
+                || res == ImmaterialResourceManager.Resource.HealthCare
+                || res == ImmaterialResourceManager.Resource.FireDepartment
+                || res == ImmaterialResourceManager.Resource.PoliceDepartment
+                || res == ImmaterialResourceManager.Resource.PublicTransport
+                || res == ImmaterialResourceManager.Resource.DeathCare
+                || res == ImmaterialResourceManager.Resource.Entertainment
+                || res == ImmaterialResourceManager.Resource.CrimeRate
+                || res == ImmaterialResourceManager.Resource.FireHazard
+                || zone != ItemClass.Zone.ResidentialLow && zone != ItemClass.Zone.ResidentialHigh
+                && res == ImmaterialResourceManager.Resource.CargoTransport
                 || Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.NaturalDisasters)
                 && (res == ImmaterialResourceManager.Resource.DisasterCoverage
                 || res == ImmaterialResourceManager.Resource.EarthquakeCoverage
                 || res == ImmaterialResourceManager.Resource.FirewatchCoverage
-                || res == ImmaterialResourceManager.Resource.RadioCoverage);
-
-        private static bool CanShowZonedResource(ImmaterialResourceManager.Resource res, ItemClass.Zone zone)
-            => zone != ItemClass.Zone.ResidentialLow && zone != ItemClass.Zone.ResidentialHigh
-                && res == ImmaterialResourceManager.Resource.CargoTransport
+                || res == ImmaterialResourceManager.Resource.RadioCoverage)
                 || Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.Parks)
                 && (zone == ItemClass.Zone.ResidentialLow || zone == ItemClass.Zone.ResidentialHigh)
                 && (res == ImmaterialResourceManager.Resource.Attractiveness
@@ -289,6 +300,7 @@ namespace ExtendedBuildings
                 onFactor++;
 
                 var label = resourceLabels[resBar.Key];
+                if (CanShowZonedResource(resBar.Key, zone))
                 {
                     int max = 0;
                     int raw = 0;
@@ -319,6 +331,13 @@ namespace ExtendedBuildings
                             newTop += ((s * 3) + 16) * col;
                     }
                     maxHeight = Math.Max(y, maxHeight);
+                    label.Show();
+                    resBar.Value.Show();
+                }
+                else
+                {
+                    label.Hide();
+                    resBar.Value.Hide();
                 }
             }
             switch (ModConfig.Instance.Display)
