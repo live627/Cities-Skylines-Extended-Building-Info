@@ -43,18 +43,20 @@ namespace ExtendedBuildings
                 strs = new string[] { Environment.NewLine, "", "", "", "", "" };
                 lastSelected = buildingId;
                 Building data = BuildingManager.instance.m_buildings.m_buffer[buildingId];
-                var productionRate = PlayerBuildingAI.GetProductionRate(data.m_productionRate, EconomyManager.instance.GetBudget(data.Info.m_class));
-                if (data.m_fireIntensity != 0)
-                    productionRate = 0;
-                FindBuildingType(data, productionRate);
+                FindBuildingType(data);
                 label1.text = String.Format(strs[5] == ""
                     ? "{0}{0}{0}{1} : {2}{0}{3} : {4}"
                     : "{0}{0}{0}{1} : {2}{0}{3} : {4}{0}{5}", strs);
             }
         }
 
-        private void FindBuildingType(Building data, int productionRate)
+        private void FindBuildingType(Building data)
         {
+            var productionRate = PlayerBuildingAI.GetProductionRate(data.m_productionRate,
+                EconomyManager.instance.GetBudget(data.Info.m_class));
+            if (data.m_fireIntensity != 0)
+                productionRate = 0;
+
             switch (data.Info.m_buildingAI)
             {
                 case FireStationAI ai:
