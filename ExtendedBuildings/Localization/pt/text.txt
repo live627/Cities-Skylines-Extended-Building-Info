@@ -1,4 +1,4 @@
-﻿BuildingInfo:
+BuildingInfo:
 HealthCare Saúde
 FireDepartment Bomb.
 PoliceDepartment Pol.
@@ -19,7 +19,7 @@ Coverage Cobertura
 FireHazard Risco de Incêndio
 Abandonment Abandono
 CargoTransport Carga
-Pollution: Poluição
+Pollution Poluição
 
 Service Progresso do Serviço
 ServiceDescription O progresso até o próximo nível, pontuação combinada de fatores mostrado acima.

@@ -1,4 +1,4 @@
-﻿BuildingInfo:
+BuildingInfo:
 HealthCare Health
 FireDepartment Fire
 PoliceDepartment Police
@@ -19,7 +19,7 @@ Coverage Coverage
 FireHazard Fire Hazard
 Abandonment Abandonment
 CargoTransport Cargo
-Pollution: Pollution
+Pollution Pollution
 
 Service Services
 ServiceDescription Progress until next level, combined score of factors shown above.
@@ -27,7 +27,7 @@ ServiceDescription Progress until next level, combined score of factors shown ab
 Education Education
 EducationDescription Education progress until next level.
 
-Happiness
+Happiness Happiness
 HappinessDescription Progress until next level, combined score of factors shown above.
 
 Wealth Wealth
