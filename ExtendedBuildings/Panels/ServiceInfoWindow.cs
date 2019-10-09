@@ -34,7 +34,7 @@ namespace ExtendedBuildings
 
         public void Update()
         {
-            if (ServicePanel == null)
+            if (!WorldInfoPanel.AnyWorldInfoPanelOpen() || ServicePanel == null)
                 return;
 
             var buildingId = GetParentInstanceId().Building;

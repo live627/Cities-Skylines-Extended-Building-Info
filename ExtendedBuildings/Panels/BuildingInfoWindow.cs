@@ -189,6 +189,9 @@ namespace ExtendedBuildings
         
         public override void Update()
         {
+            if (!WorldInfoPanel.AnyWorldInfoPanelOpen())
+                return;
+
             var instanceId = GetParentInstanceId();
             if (instanceId.Type == InstanceType.Building && instanceId.Building != 0)
             {
