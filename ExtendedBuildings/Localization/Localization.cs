@@ -50,7 +50,7 @@ namespace ExtendedBuildings
             {
                 var key = cat.ToString().ToLower() + "_" + name.ToLower();
                 if (!texts.ContainsKey(key))
-                    return name;
+                    return "!! " + name;
 
                 return texts[key];
             }
