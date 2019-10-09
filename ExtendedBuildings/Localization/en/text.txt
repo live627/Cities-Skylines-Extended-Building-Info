@@ -1,4 +1,4 @@
-BuildingInfo:
+﻿BuildingInfo:
 HealthCare Health
 FireDepartment Fire
 PoliceDepartment Police
@@ -20,6 +20,13 @@ FireHazard Fire Hazard
 Abandonment Abandonment
 CargoTransport Cargo
 Pollution Pollution
+RadioCoverage Radio
+FirewatchCoverage Fire Safety
+EarthquakeCoverage Earthquake Safety
+DisasterCoverage Disaster Safety
+TourCoverage Tours
+PostService Mail
+EducationLibrary Library
 
 Service Services
 ServiceDescription Progress until next level, combined score of factors shown above.
