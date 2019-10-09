@@ -147,6 +147,7 @@ namespace ExtendedBuildings
                 || res == ImmaterialResourceManager.Resource.Entertainment
                 || res == ImmaterialResourceManager.Resource.CrimeRate
                 || res == ImmaterialResourceManager.Resource.FireHazard
+                || res == ImmaterialResourceManager.Resource.PostService
                 || zone != ItemClass.Zone.ResidentialLow && zone != ItemClass.Zone.ResidentialHigh
                 && res == ImmaterialResourceManager.Resource.CargoTransport
                 || Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.NaturalDisasters)
