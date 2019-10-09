@@ -7,8 +7,8 @@ namespace ExtendedBuildings
 {
     public class Markov
     {
-        private Dictionary<string, Ngram> pairs;
-        private Dictionary<string, int> starters;
+        private Dictionary<string, Ngram> pairs = new Dictionary<string, Ngram>();
+        private Dictionary<string, int> starters = new Dictionary<string, int>();
         int n;
         bool isWord;
 
@@ -17,25 +17,15 @@ namespace ExtendedBuildings
             var resource = Localization.Get(LocalizationCategory.Markov, resourceName);           
             this.n = n;
 
-            pairs = new Dictionary<string, Ngram>();
-            starters = new Dictionary<string, int>();
-
             var buffer = resource.Split(new string[] { "\r\n","\n" }, StringSplitOptions.None);
             foreach (var line in buffer)
-            {
-                if (line == null || line.Trim().Length <= n)
+                if (line != null || line.Trim().Length > n)
                 {
-                    continue;
+                    if (useWords)
+                        GenerateByWord(line.Trim(), n);
+                    else
+                        GenerateByChar(line.Trim(), n);
                 }
-                if (useWords)
-                {
-                    GenerateByWord(line.Trim(), n);
-                }
-                else
-                {
-                    GenerateByChar(line.Trim(), n);
-                }
-            }
         }
 
 
@@ -253,20 +243,9 @@ namespace ExtendedBuildings
     class Ngram
     {
         public List<string> Following = new List<string>();
+        
+        internal void Add(string p) => Following.Add(p);
 
-        public Ngram()
-        {
-
-        }
-
-        internal void Add(string p)
-        {
-            Following.Add(p);
-        }
-
-        public string GetNext(ref Randomizer rand)
-        {
-            return Following[rand.Int32((uint)Following.Count)];
-        }
+        public string GetNext(ref Randomizer rand) => Following[rand.Int32((uint)Following.Count)];
     }
 }
