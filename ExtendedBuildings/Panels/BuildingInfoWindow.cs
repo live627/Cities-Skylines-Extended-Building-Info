@@ -1,7 +1,6 @@
 namespace ExtendedBuildings
 {
     using ColossalFramework;
-    using ColossalFramework.Math;
     using ColossalFramework.UI;
     using ICities;
     using System;
@@ -19,9 +18,6 @@ namespace ExtendedBuildings
 
         public ZonedBuildingWorldInfoPanel baseBuildingWindow;
         FieldInfo baseSub;
-
-        Dictionary<string, Markov> buildingNames = new Dictionary<string, Markov>();
-        Dictionary<string, Markov> buildingDescriptions = new Dictionary<string, Markov>();
 
         UILabel descriptionLabel;
 
@@ -87,13 +83,50 @@ namespace ExtendedBuildings
                 label.size = new Vector2(100, 20);
                 aresourceLabels.Add(label);
             }
-            
-            buildingNames.Clear();
-            LoadTextFiles();
-            
             descriptionLabel = AddUIComponent<UILabel>();
 
             base.Awake();
+
+            ColossalFramework.Globalization.LocaleManager.eventLocaleChanged += OnLocaleChanged;
+        }
+
+        public override void OnDisable()
+        {
+            base.OnDisable();
+
+            ColossalFramework.Globalization.LocaleManager.eventLocaleChanged -= OnLocaleChanged;
+        }
+
+        private void OnLocaleChanged()
+        {
+            var resNames = Enum.GetNames(typeof(ImmaterialResourceManager.Resource));
+            for (var i = 0; i < 27; i += 1)
+                if (CanShowResource((ImmaterialResourceManager.Resource)i))
+                    tooltips[i] = resourceLabels[(ImmaterialResourceManager.Resource)i].text = Localization.Get(LocalizationCategory.BuildingInfo, resNames[i]);
+
+            var ares = new string[]
+            {
+                "Service", 
+                "Education",
+                "Happiness",
+                resNames[8], // Noise
+                resNames[18], // Abandonment
+                "Pollution"
+            };
+            var adesc = new string[]
+            {
+                "ServiceDescription", 
+                "EducationDescription",
+                "HappinessDescription",
+                resNames[8], // Noise
+                resNames[18], // Abandonment
+                "Pollution"
+            };
+            for (var i = 0; i < 6; i += 1)
+            {
+                tooltips[i + 26] = Localization.Get(LocalizationCategory.BuildingInfo, adesc[i]);
+                aresourceLabels[i].text = Localization.Get(LocalizationCategory.BuildingInfo, ares[i]);
+            }
         }
 
         private static bool CanShowResource(ImmaterialResourceManager.Resource res)
@@ -125,43 +158,6 @@ namespace ExtendedBuildings
                 && (zone == ItemClass.Zone.ResidentialLow || zone == ItemClass.Zone.ResidentialHigh)
                 && (res == ImmaterialResourceManager.Resource.Attractiveness
                 || res == ImmaterialResourceManager.Resource.TourCoverage);
-
-        private void LoadTextFiles()
-        {
-            var commercialName = new Markov("nameCommercial", false, 4);
-            buildingNames.Add(ItemClass.Zone.CommercialHigh.ToString(), commercialName);
-            buildingNames.Add(ItemClass.Zone.CommercialLow.ToString(), commercialName);
-            var resName = new Markov("nameResidential", false, 4);
-            buildingNames.Add(ItemClass.Zone.ResidentialHigh.ToString(), resName);
-            buildingNames.Add(ItemClass.Zone.ResidentialLow.ToString(), resName);
-            var indyName = new Markov("nameIndustrial", false, 4);
-            buildingNames.Add(ItemClass.Zone.Industrial.ToString(), indyName);
-            var officeName = new Markov("nameOffice", false, 4);
-            buildingNames.Add(ItemClass.Zone.Office.ToString(), officeName);
-
-            buildingNames.Add(ItemClass.SubService.IndustrialFarming.ToString(), new Markov("nameFarm", false, 4));
-            buildingNames.Add(ItemClass.SubService.IndustrialForestry.ToString(), new Markov("nameForest", false, 4));
-            buildingNames.Add(ItemClass.SubService.IndustrialOre.ToString(), new Markov("nameMine", false, 4));
-            buildingNames.Add(ItemClass.SubService.IndustrialOil.ToString(), new Markov("nameOil", false, 4));
-
-            buildingDescriptions.Clear();
-            var commercialDescription = new Markov("descriptionsCommercial", false, 9);
-            buildingDescriptions.Add(ItemClass.Zone.CommercialHigh.ToString(), commercialDescription);
-            buildingDescriptions.Add(ItemClass.Zone.CommercialLow.ToString(), commercialDescription);
-            var resDescription = new Markov("descriptionsResidential", false, 9);
-            buildingDescriptions.Add(ItemClass.Zone.ResidentialHigh.ToString(), resDescription);
-            buildingDescriptions.Add(ItemClass.Zone.ResidentialLow.ToString(), resDescription);
-            var indyDescription = new Markov("descriptionsIndustrial", false, 9);
-            buildingDescriptions.Add(ItemClass.Zone.Industrial.ToString(), indyDescription);
-            var officeDescription = new Markov("descriptionsOffice", false, 9);
-            buildingDescriptions.Add(ItemClass.Zone.Office.ToString(), officeDescription);
-
-
-            buildingDescriptions.Add(ItemClass.SubService.IndustrialFarming.ToString(), new Markov("descriptionsFarm", false, 4));
-            buildingDescriptions.Add(ItemClass.SubService.IndustrialForestry.ToString(), new Markov("descriptionsForest", false, 4));
-            buildingDescriptions.Add(ItemClass.SubService.IndustrialOre.ToString(), new Markov("descriptionsMine", false, 4));
-            buildingDescriptions.Add(ItemClass.SubService.IndustrialOil.ToString(), new Markov("descriptionsOil", false, 4));
-        }
 
         public override void Start()
         {
@@ -368,14 +364,14 @@ namespace ExtendedBuildings
                     {
                         if ((data.m_flags & Building.Flags.CustomName) == Building.Flags.None && !buildingName.hasFocus)
                         {
-                            bName = GetName(buildingId, zone, data.Info.m_class.m_subService);
-                            buildingName.text = bName;
+                            bName = Localization.GetName(buildingId, zone, data.Info.m_class.m_subService);
+                            buildingName.text = bName ?? buildingName.text;
                         }
                     }
 
                     if (ModConfig.Instance.EnableDescriptions)
                     {
-                        descriptionLabel.text = GetDescription(bName, buildingId, zone, data.Info.m_class.m_subService);
+                        descriptionLabel.text = Localization.GetDescription(bName, buildingId, zone, data.Info.m_class.m_subService);
                         descriptionLabel.Show();
                         descriptionLabel.relativePosition = new Vector3(14, maxHeight);
                         maxHeight += descriptionLabel.height + s * 2;
@@ -387,38 +383,7 @@ namespace ExtendedBuildings
             height = maxHeight;
         }
 
-        private string GetDescription(string bName, ushort buildingId, ItemClass.Zone zone, ItemClass.SubService ss)
-        {
-            Randomizer randomizer = new Randomizer(Singleton<SimulationManager>.instance.m_metaData.m_gameInstanceIdentifier.GetHashCode() - buildingId);
-            var year = 2015 - buildingId % 200;
-            if (!buildingDescriptions.TryGetValue(ss.ToString(), out Markov markov))
-                buildingDescriptions.TryGetValue(zone.ToString(), out markov);
-
-            if (markov != null)
-            {
-                var text = markov.GetText(ref randomizer, 100, 200, true);
-                var cityName = Singleton<SimulationManager>.instance.m_metaData.m_CityName.Trim();
-                text = text.Replace("COMPANY", bName).Replace("DATE", year.ToString()).Replace("SITY", cityName);
-                return text;
-            }
-            return "";
-        }
-        
-        private string GetName(ushort buildingId, ItemClass.Zone zone, ItemClass.SubService ss)
-        {
-            Randomizer randomizer = new Randomizer(Singleton<SimulationManager>.instance.m_metaData.m_gameInstanceIdentifier.GetHashCode() - buildingId);
-            if (buildingId % 6 != 0)
-            {
-                if (!buildingNames.TryGetValue(ss.ToString(), out Markov markov))
-                    buildingNames.TryGetValue(zone.ToString(), out markov);
-
-                if (markov != null)
-                    return markov.GetText(ref randomizer, 6, 16, true, true);
-            }
-            return buildingName.text;
-        }
-
-        private void  SetProgress(UIProgressBar serviceBar, float val, float start, float target, bool isPositive)
+        private void SetProgress(UIProgressBar serviceBar, float val, float start, float target, bool isPositive)
         {
             float finalValue = (val - start) / (target - start);
             serviceBar.tooltip = string.Format(serviceBar.tooltip, LocaleFormatter.FormatPercentage((int)(finalValue * 100)));
