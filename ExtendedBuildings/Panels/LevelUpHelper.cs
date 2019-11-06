@@ -152,7 +152,7 @@ namespace ExtendedBuildings
 
         public void GetEducationHappyScore(Building building, out float education, out float happy, out float commute)
         {
-            Citizen.BehaviourData behaviour = default(Citizen.BehaviourData);
+            Citizen.BehaviourData behaviour = default;
             ItemClass.Zone zone = building.Info.m_class.GetZone();
 
             commute = 0;
