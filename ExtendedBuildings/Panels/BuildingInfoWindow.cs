@@ -212,28 +212,25 @@ namespace ExtendedBuildings
             Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingId];
             Singleton<ImmaterialResourceManager>.instance.CheckLocalResources(data.m_position, out ushort[] array, out int num);
             float x = 14, s = 7, y = s * 2, maxHeight = y;
-            int col = 0, onFactor = -1;
+            int col = 0;
             levelUpHelper.GetEducationHappyScore(buildingId, out float education, out float happy, out float commute);
-            foreach (var resBar in aresourceBars)
+            for (int i = 0; i < aresourceBars.Count; i++)
             {
-                onFactor++;
-
-                var label = aresourceLabels[onFactor];
-                label.relativePosition = new Vector3(14 + (col * 230), y + s / 2);
-                resBar.relativePosition = new Vector3(120 + (col * 230), y);
-                resBar.size = new Vector2(100, 16);
-                y += resBar.size.y + s;
-                switch (onFactor)
+                aresourceLabels[i].relativePosition = new Vector3(14 + (col * 230), y + s / 2);
+                aresourceBars[i].relativePosition = new Vector3(120 + (col * 230), y);
+                aresourceBars[i].size = new Vector2(100, 16);
+                y += aresourceBars[i].size.y + s;
+                switch (i)
                 {
                     case 0:
-                        label.text = zone == ItemClass.Zone.ResidentialHigh
+                        aresourceLabels[i].text = zone == ItemClass.Zone.ResidentialHigh
                             || zone == ItemClass.Zone.ResidentialLow
                             || zone == ItemClass.Zone.CommercialHigh
                             || zone == ItemClass.Zone.CommercialLow
                             ? Localization.Get(LocalizationCategory.BuildingInfo, "LandValueProgress")
                             : Localization.Get(LocalizationCategory.BuildingInfo, "Service");
                         SetProgress(
-                            resBar,
+                            aresourceBars[i],
                             levelUpHelper.GetProperServiceScore(buildingId),
                             levelUpHelper.GetServiceThreshhold((ItemClass.Level)(Math.Max(-1, (int)data.Info.m_class.m_level - 1)), zone),
                             levelUpHelper.GetServiceThreshhold(data.Info.m_class.m_level, zone),
@@ -241,25 +238,25 @@ namespace ExtendedBuildings
                         break;
                     case 1:
                         SetProgress(
-                            resBar,
+                            aresourceBars[i],
                             education,
                             levelUpHelper.GetEducationThreshhold((ItemClass.Level)(Math.Max(-1, (int)data.Info.m_class.m_level - 1)), zone),
                             levelUpHelper.GetEducationThreshhold(data.Info.m_class.m_level, zone),
                             true);
-                        label.text = zone == ItemClass.Zone.CommercialHigh || zone == ItemClass.Zone.CommercialLow
+                        aresourceLabels[i].text = zone == ItemClass.Zone.CommercialHigh || zone == ItemClass.Zone.CommercialLow
                             ? Localization.Get(LocalizationCategory.BuildingInfo, "Wealth")
                             : Localization.Get(LocalizationCategory.BuildingInfo, "Education");
                         break;
                     case 2:
-                        label.text = Localization.Get(LocalizationCategory.BuildingInfo, "Happiness");
-                        SetProgress(resBar, happy, 0, 100, true);
+                        aresourceLabels[i].text = Localization.Get(LocalizationCategory.BuildingInfo, "Happiness");
+                        SetProgress(aresourceBars[i], happy, 0, 100, true);
                         break;
                     case 3:
                         {
                             int max = 0;
                             int raw = 0;
                             var value = levelUpHelper.GetServiceScore(ImmaterialResourceManager.Resource.NoisePollution, zone, array, num, ref raw, ref max);
-                            SetProgress(resBar, (float)value, 0, 100, false);
+                            SetProgress(aresourceBars[i], (float)value, 0, 100, false);
                             break;
                         }
                     case 4:
@@ -267,15 +264,15 @@ namespace ExtendedBuildings
                             int max = 0;
                             int raw = 0;
                             var value = levelUpHelper.GetServiceScore(ImmaterialResourceManager.Resource.Abandonment, zone, array, num, ref raw, ref max);
-                            SetProgress(resBar, (float)value, 0, 100, false);
+                            SetProgress(aresourceBars[i], (float)value, 0, 100, false);
                             break;
                         }
                     case 5:
-                        SetProgress(resBar, levelUpHelper.GetPollutionScore(data, zone), 0, 100, false);
+                        SetProgress(aresourceBars[i], levelUpHelper.GetPollutionScore(data, zone), 0, 100, false);
                         break;
                 }
-                resBar.tooltip = $"{tooltips[onFactor + 26]} ({resBar.value:P0})";
-                if (onFactor == 2)
+                aresourceBars[i].tooltip = $"{tooltips[i + 26]} ({aresourceBars[i].value:P0})";
+                if (i == 2)
                 {
                     col = 1;
                     y = 14;
@@ -293,7 +290,7 @@ namespace ExtendedBuildings
 
             y = newTop;
             int halfNumFactors = Mathf.CeilToInt(numFactors / 2);
-            onFactor = 0;
+            int onFactor = 0;
             col = 0;
             foreach (var resBar in resourceBars)
             {
