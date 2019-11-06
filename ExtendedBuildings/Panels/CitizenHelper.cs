@@ -24,7 +24,7 @@ namespace ExtendedBuildings
             int num2 = 0;
             while (num != 0u)
             {
-                if ((ushort)(instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Home) != 0)
+                if (EnumExtensions.IsFlagSet(instance.m_units.m_buffer[num].m_flags, CitizenUnit.Flags.Home))
                 {
                     int num3 = 0;
                     int num4 = 0;
@@ -57,7 +57,7 @@ namespace ExtendedBuildings
             int num2 = 0;
             while (num != 0u)
             {
-                if ((ushort)(instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Work) != 0)
+                if (EnumExtensions.IsFlagSet(instance.m_units.m_buffer[num].m_flags, CitizenUnit.Flags.Work))
                     instance.m_units.m_buffer[num].GetCitizenWorkBehaviour(ref behaviour, ref aliveCount, ref totalCount);
 
                 num = instance.m_units.m_buffer[num].m_nextUnit;
@@ -76,7 +76,7 @@ namespace ExtendedBuildings
             int num2 = 0;
             while (num != 0u)
             {
-                if ((ushort)(instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Visit) != 0)
+                if (EnumExtensions.IsFlagSet(instance.m_units.m_buffer[num].m_flags, CitizenUnit.Flags.Visit))
                     instance.m_units.m_buffer[num].GetCitizenVisitBehaviour(ref behaviour, ref aliveCount, ref totalCount);
 
                 num = instance.m_units.m_buffer[num].m_nextUnit;
