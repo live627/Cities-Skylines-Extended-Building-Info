@@ -209,11 +209,10 @@ namespace ExtendedBuildings
             var levelUpHelper = LevelUpHelper3.instance;
             var info = building.Info;
             var zone = info.m_class.GetZone();
-            Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingId];
-            Singleton<ImmaterialResourceManager>.instance.CheckLocalResources(data.m_position, out ushort[] array, out int num);
+            Singleton<ImmaterialResourceManager>.instance.CheckLocalResources(building.m_position, out ushort[] array, out int num);
             float x = 14, s = 7, y = s * 2, maxHeight = y;
             int col = 0;
-            levelUpHelper.GetEducationHappyScore(buildingId, out float education, out float happy, out float commute);
+            levelUpHelper.GetEducationHappyScore(building, out float education, out float happy, out float commute);
             for (int i = 0; i < aresourceBars.Count; i++)
             {
                 aresourceLabels[i].relativePosition = new Vector3(14 + (col * 230), y + s / 2);
@@ -232,16 +231,16 @@ namespace ExtendedBuildings
                         SetProgress(
                             aresourceBars[i],
                             levelUpHelper.GetProperServiceScore(buildingId),
-                            levelUpHelper.GetServiceThreshhold((ItemClass.Level)(Math.Max(-1, (int)data.Info.m_class.m_level - 1)), zone),
-                            levelUpHelper.GetServiceThreshhold(data.Info.m_class.m_level, zone),
+                            levelUpHelper.GetServiceThreshhold((ItemClass.Level)(Math.Max(-1, (int)building.Info.m_class.m_level - 1)), zone),
+                            levelUpHelper.GetServiceThreshhold(building.Info.m_class.m_level, zone),
                             true);
                         break;
                     case 1:
                         SetProgress(
                             aresourceBars[i],
                             education,
-                            levelUpHelper.GetEducationThreshhold((ItemClass.Level)(Math.Max(-1, (int)data.Info.m_class.m_level - 1)), zone),
-                            levelUpHelper.GetEducationThreshhold(data.Info.m_class.m_level, zone),
+                            levelUpHelper.GetEducationThreshhold((ItemClass.Level)(Math.Max(-1, (int)building.Info.m_class.m_level - 1)), zone),
+                            levelUpHelper.GetEducationThreshhold(building.Info.m_class.m_level, zone),
                             true);
                         aresourceLabels[i].text = zone == ItemClass.Zone.CommercialHigh || zone == ItemClass.Zone.CommercialLow
                             ? Localization.Get(LocalizationCategory.BuildingInfo, "Wealth")
@@ -268,7 +267,7 @@ namespace ExtendedBuildings
                             break;
                         }
                     case 5:
-                        SetProgress(aresourceBars[i], levelUpHelper.GetPollutionScore(data, zone), 0, 100, false);
+                        SetProgress(aresourceBars[i], levelUpHelper.GetPollutionScore(building, zone), 0, 100, false);
                         break;
                 }
                 aresourceBars[i].tooltip = $"{tooltips[i + 26]} ({aresourceBars[i].value:P0})";
@@ -360,16 +359,16 @@ namespace ExtendedBuildings
                     var bName = buildingName.text;
                     if (ModConfig.Instance.EnableNames)
                     {
-                        if ((data.m_flags & Building.Flags.CustomName) == Building.Flags.None && !buildingName.hasFocus)
+                        if ((building.m_flags & Building.Flags.CustomName) == Building.Flags.None && !buildingName.hasFocus)
                         {
-                            bName = Localization.GetName(buildingId, zone, data.Info.m_class.m_subService);
+                            bName = Localization.GetName(buildingId, zone, building.Info.m_class.m_subService);
                             buildingName.text = bName ?? buildingName.text;
                         }
                     }
 
                     if (ModConfig.Instance.EnableDescriptions)
                     {
-                        descriptionLabel.text = Localization.GetDescription(bName, buildingId, zone, data.Info.m_class.m_subService);
+                        descriptionLabel.text = Localization.GetDescription(bName, buildingId, zone, building.Info.m_class.m_subService);
                         descriptionLabel.Show();
                         descriptionLabel.relativePosition = new Vector3(14, maxHeight);
                         maxHeight += descriptionLabel.height + s * 2;

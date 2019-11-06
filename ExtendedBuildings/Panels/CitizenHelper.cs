@@ -17,10 +17,10 @@ namespace ExtendedBuildings
             }
         }
 
-        public void GetHomeBehaviour(ushort buildingID, Building buildingData, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount, ref int COMPANYCount, ref int aliveCOMPANYCount, ref int emptyCOMPANYCount)
+        public void GetHomeBehaviour(Building building, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount, ref int COMPANYCount, ref int aliveCOMPANYCount, ref int emptyCOMPANYCount)
         {
             CitizenManager instance = Singleton<CitizenManager>.instance;
-            uint num = buildingData.m_citizenUnits;
+            uint num = building.m_citizenUnits;
             int num2 = 0;
             while (num != 0u)
             {
@@ -50,10 +50,10 @@ namespace ExtendedBuildings
             }
         }
 
-        public void GetWorkBehaviour(ushort buildingID, Building buildingData, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount)
+        public void GetWorkBehaviour(Building building, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount)
         {
             CitizenManager instance = Singleton<CitizenManager>.instance;
-            uint num = buildingData.m_citizenUnits;
+            uint num = building.m_citizenUnits;
             int num2 = 0;
             while (num != 0u)
             {
@@ -69,10 +69,10 @@ namespace ExtendedBuildings
             }
         }
 
-        public void GetVisitBehaviour(ushort buildingID, Building buildingData, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount)
+        public void GetVisitBehaviour(Building building, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount)
         {
             CitizenManager instance = Singleton<CitizenManager>.instance;
-            uint num = buildingData.m_citizenUnits;
+            uint num = building.m_citizenUnits;
             int num2 = 0;
             while (num != 0u)
             {

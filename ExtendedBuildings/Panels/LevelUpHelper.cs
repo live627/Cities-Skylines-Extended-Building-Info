@@ -150,11 +150,10 @@ namespace ExtendedBuildings
             return Math.Max(0, (int)num2);
         }
 
-        public void GetEducationHappyScore(ushort buildingID, out float education, out float happy, out float commute)
+        public void GetEducationHappyScore(Building building, out float education, out float happy, out float commute)
         {
             Citizen.BehaviourData behaviour = default(Citizen.BehaviourData);
-            Building data = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
-            ItemClass.Zone zone = data.Info.m_class.GetZone();
+            ItemClass.Zone zone = building.Info.m_class.GetZone();
 
             commute = 0;
 
@@ -166,7 +165,7 @@ namespace ExtendedBuildings
 
             if (zone == ItemClass.Zone.ResidentialLow || zone == ItemClass.Zone.ResidentialHigh)
             {
-                CitizenHelper.Instance.GetHomeBehaviour(buildingID, data, ref behaviour, ref alive, ref total, ref COMPANYCount, ref aliveCOMPANYCount, ref emptyCOMPANY);
+                CitizenHelper.Instance.GetHomeBehaviour(building, ref behaviour, ref alive, ref total, ref COMPANYCount, ref aliveCOMPANYCount, ref emptyCOMPANY);
                 if (alive > 0)
                 {
                     int num = behaviour.m_educated1Count + behaviour.m_educated2Count * 2 + behaviour.m_educated3Count * 3;
@@ -181,7 +180,7 @@ namespace ExtendedBuildings
             }
             else if (zone == ItemClass.Zone.CommercialHigh || zone == ItemClass.Zone.CommercialLow)
             {
-                CitizenHelper.Instance.GetVisitBehaviour(buildingID, data, ref behaviour, ref alive, ref total);
+                CitizenHelper.Instance.GetVisitBehaviour(building, ref behaviour, ref alive, ref total);
                 if (alive > 0)
                 {
                     int num = num = behaviour.m_wealth1Count + behaviour.m_wealth2Count * 2 + behaviour.m_wealth3Count * 3;
@@ -193,7 +192,7 @@ namespace ExtendedBuildings
             }
             else if (zone == ItemClass.Zone.Office)
             {
-                CitizenHelper.Instance.GetWorkBehaviour(buildingID, data, ref behaviour, ref alive, ref total);
+                CitizenHelper.Instance.GetWorkBehaviour(building, ref behaviour, ref alive, ref total);
                 int num = behaviour.m_educated1Count + behaviour.m_educated2Count * 2 + behaviour.m_educated3Count * 3;
                 if (alive > 0)
                 {
@@ -204,7 +203,7 @@ namespace ExtendedBuildings
             }
             else
             {
-                CitizenHelper.Instance.GetWorkBehaviour(buildingID, data, ref behaviour, ref alive, ref total);
+                CitizenHelper.Instance.GetWorkBehaviour(building, ref behaviour, ref alive, ref total);
                 int num = behaviour.m_educated1Count + behaviour.m_educated2Count * 2 + behaviour.m_educated3Count * 3;
                 if (alive > 0)
                 {
