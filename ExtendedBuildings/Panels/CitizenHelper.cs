@@ -17,7 +17,7 @@ namespace ExtendedBuildings
             }
         }
 
-        public void GetHomeBehaviour(Building building, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount, ref int COMPANYCount, ref int aliveCOMPANYCount, ref int emptyCOMPANYCount)
+        public void GetHomeBehaviour(ref Building building, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount, ref int COMPANYCount, ref int aliveCOMPANYCount, ref int emptyCOMPANYCount)
         {
             CitizenManager instance = Singleton<CitizenManager>.instance;
             uint num = building.m_citizenUnits;
@@ -50,7 +50,7 @@ namespace ExtendedBuildings
             }
         }
 
-        public void GetWorkBehaviour(Building building, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount)
+        public void GetWorkBehaviour(ref Building building, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount)
         {
             CitizenManager instance = Singleton<CitizenManager>.instance;
             uint num = building.m_citizenUnits;
@@ -69,7 +69,7 @@ namespace ExtendedBuildings
             }
         }
 
-        public void GetVisitBehaviour(Building building, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount)
+        public void GetVisitBehaviour(ref Building building, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount)
         {
             CitizenManager instance = Singleton<CitizenManager>.instance;
             uint num = building.m_citizenUnits;
