@@ -189,7 +189,7 @@ namespace ExtendedBuildings
             if (!WorldInfoPanel.AnyWorldInfoPanelOpen())
                 return;
 
-            var instanceId = GetParentInstanceId();
+            var instanceId = WorldInfoPanel.GetCurrentInstanceID();
             if (instanceId.Type == InstanceType.Building && instanceId.Building != 0)
             {
                 ushort building = instanceId.Building;
@@ -390,14 +390,6 @@ namespace ExtendedBuildings
                 serviceBar.progressColor = Color.Lerp(Color.yellow, Color.red, finalValue);
 
             serviceBar.value = Mathf.Clamp01(finalValue);
-        }
-
-        private InstanceID GetParentInstanceId()
-        {
-            if (baseSub == null)
-                baseSub = baseBuildingWindow.GetType().GetField("m_InstanceID", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            return (InstanceID)baseSub.GetValue(baseBuildingWindow);
         }
     }
 }
