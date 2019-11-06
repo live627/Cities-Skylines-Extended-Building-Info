@@ -24,11 +24,11 @@ namespace ExtendedBuildings
             int num2 = 0;
             while (num != 0u)
             {
-                if ((ushort)(instance.m_units.m_buffer[(int)((UIntPtr)num)].m_flags & CitizenUnit.Flags.Home) != 0)
+                if ((ushort)(instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Home) != 0)
                 {
                     int num3 = 0;
                     int num4 = 0;
-                    instance.m_units.m_buffer[(int)((UIntPtr)num)].GetCitizenHomeBehaviour(ref behaviour, ref num3, ref num4);
+                    instance.m_units.m_buffer[num].GetCitizenHomeBehaviour(ref behaviour, ref num3, ref num4);
                     if (num3 != 0)
                     {
                         aliveCOMPANYCount++;
@@ -41,7 +41,7 @@ namespace ExtendedBuildings
 
                     COMPANYCount++;
                 }
-                num = instance.m_units.m_buffer[(int)((UIntPtr)num)].m_nextUnit;
+                num = instance.m_units.m_buffer[num].m_nextUnit;
                 if (++num2 > 524288)
                 {
                     CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
@@ -57,10 +57,10 @@ namespace ExtendedBuildings
             int num2 = 0;
             while (num != 0u)
             {
-                if ((ushort)(instance.m_units.m_buffer[(int)((UIntPtr)num)].m_flags & CitizenUnit.Flags.Work) != 0)
-                    instance.m_units.m_buffer[(int)((UIntPtr)num)].GetCitizenWorkBehaviour(ref behaviour, ref aliveCount, ref totalCount);
+                if ((ushort)(instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Work) != 0)
+                    instance.m_units.m_buffer[num].GetCitizenWorkBehaviour(ref behaviour, ref aliveCount, ref totalCount);
 
-                num = instance.m_units.m_buffer[(int)((UIntPtr)num)].m_nextUnit;
+                num = instance.m_units.m_buffer[num].m_nextUnit;
                 if (++num2 > 524288)
                 {
                     CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
@@ -76,10 +76,10 @@ namespace ExtendedBuildings
             int num2 = 0;
             while (num != 0u)
             {
-                if ((ushort)(instance.m_units.m_buffer[(int)((UIntPtr)num)].m_flags & CitizenUnit.Flags.Visit) != 0)
-                    instance.m_units.m_buffer[(int)((UIntPtr)num)].GetCitizenVisitBehaviour(ref behaviour, ref aliveCount, ref totalCount);
+                if ((ushort)(instance.m_units.m_buffer[num].m_flags & CitizenUnit.Flags.Visit) != 0)
+                    instance.m_units.m_buffer[num].GetCitizenVisitBehaviour(ref behaviour, ref aliveCount, ref totalCount);
 
-                num = instance.m_units.m_buffer[(int)((UIntPtr)num)].m_nextUnit;
+                num = instance.m_units.m_buffer[num].m_nextUnit;
                 if (++num2 > 524288)
                 {
                     CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
