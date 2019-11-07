@@ -174,14 +174,7 @@ namespace ExtendedBuildings
                     }
 
                     var nc = "";
-                    if (isWord)
-                    {
-                        nc = String.Join(" ", nextCurrent);
-                    }
-                    else
-                    {
-                        nc = String.Join("", nextCurrent);
-                    }
+                     nc = String.Join(isWord ? " " : "", nextCurrent);
 
                     if (!pairs.ContainsKey(nc))
                     {
@@ -210,15 +203,7 @@ namespace ExtendedBuildings
                 }
             }
 
-            if (isWord)
-            {
-                return string.Join(" ", result.ToArray()).Trim();
-            }
-            else
-            {
-                return string.Join("", result.ToArray()).Trim();
-            }
-
+            return string.Join(isWord ? " " : "", result.ToArray()).Trim();
         }
 
         private string GetRandomStarter(ref Randomizer rand)
