@@ -162,55 +162,57 @@ namespace ExtendedBuildings
             int COMPANYCount = 0;
             int aliveCOMPANYCount = 0;
             int emptyCOMPANY = 0;
+            int num = 0;
 
-            if (zone == ItemClass.Zone.ResidentialLow || zone == ItemClass.Zone.ResidentialHigh)
+            switch (zone)
             {
-                CitizenHelper.Instance.GetHomeBehaviour(ref building, ref behaviour, ref alive, ref total, ref COMPANYCount, ref aliveCOMPANYCount, ref emptyCOMPANY);
-                if (alive > 0)
-                {
-                    int num = behaviour.m_educated1Count + behaviour.m_educated2Count * 2 + behaviour.m_educated3Count * 3;
-                    int num2 = behaviour.m_teenCount + behaviour.m_youngCount * 2 + behaviour.m_adultCount * 3 + behaviour.m_seniorCount * 3;                    
-                    if (num2 != 0)
+                case ItemClass.Zone.ResidentialLow:
+                case ItemClass.Zone.ResidentialHigh:
+                    CitizenHelper.Instance.GetHomeBehaviour(ref building, ref behaviour, ref alive, ref total, ref COMPANYCount, ref aliveCOMPANYCount, ref emptyCOMPANY);
+                    if (alive > 0)
                     {
-                        education = (num * 72 + (num2 >> 1)) / num2;
-                        happy =  behaviour.m_wellbeingAccumulation / (float)alive;
+                        num = behaviour.m_educated1Count + behaviour.m_educated2Count * 2 + behaviour.m_educated3Count * 3;
+                        int num2 = behaviour.m_teenCount + behaviour.m_youngCount * 2 + behaviour.m_adultCount * 3 + behaviour.m_seniorCount * 3;
+                        if (num2 != 0)
+                        {
+                            education = (num * 72 + (num2 >> 1)) / num2;
+                            happy = behaviour.m_wellbeingAccumulation / (float)alive;
+                            return;
+                        }
+                    }
+                    break;
+                case ItemClass.Zone.CommercialLow:
+                case ItemClass.Zone.CommercialHigh:
+                    CitizenHelper.Instance.GetVisitBehaviour(ref building, ref behaviour, ref alive, ref total);
+                    if (alive > 0)
+                    {
+                        num = behaviour.m_wealth1Count + behaviour.m_wealth2Count * 2 + behaviour.m_wealth3Count * 3;
+                        education = (num * 18 + (alive >> 1)) / alive;
+                        happy = behaviour.m_wellbeingAccumulation / (float)alive;
+                        commute = 0;
                         return;
                     }
-                }
-            }
-            else if (zone == ItemClass.Zone.CommercialHigh || zone == ItemClass.Zone.CommercialLow)
-            {
-                CitizenHelper.Instance.GetVisitBehaviour(ref building, ref behaviour, ref alive, ref total);
-                if (alive > 0)
-                {
-                    int num = num = behaviour.m_wealth1Count + behaviour.m_wealth2Count * 2 + behaviour.m_wealth3Count * 3;
-                    education = (num * 18 + (alive >> 1)) / alive;
-                    happy =  behaviour.m_wellbeingAccumulation / (float)alive;
-                    commute = 0;
-                    return;
-                }
-            }
-            else if (zone == ItemClass.Zone.Office)
-            {
-                CitizenHelper.Instance.GetWorkBehaviour(ref building, ref behaviour, ref alive, ref total);
-                int num = behaviour.m_educated1Count + behaviour.m_educated2Count * 2 + behaviour.m_educated3Count * 3;
-                if (alive > 0)
-                {
-                    education = (num * 12 + (alive >> 1)) / alive;
-                    happy = behaviour.m_wellbeingAccumulation / (float)alive;
-                    return;
-                }
-            }
-            else
-            {
-                CitizenHelper.Instance.GetWorkBehaviour(ref building, ref behaviour, ref alive, ref total);
-                int num = behaviour.m_educated1Count + behaviour.m_educated2Count * 2 + behaviour.m_educated3Count * 3;
-                if (alive > 0)
-                {
-                    education = num = (num * 20 + (alive >> 1)) / alive;
-                    happy = behaviour.m_wellbeingAccumulation / (float)alive;
-                    return;
-                }
+                    break;
+                case ItemClass.Zone.Industrial:
+                    CitizenHelper.Instance.GetWorkBehaviour(ref building, ref behaviour, ref alive, ref total);
+                    num = behaviour.m_educated1Count + behaviour.m_educated2Count * 2 + behaviour.m_educated3Count * 3;
+                    if (alive > 0)
+                    {
+                        education = num = (num * 20 + (alive >> 1)) / alive;
+                        happy = behaviour.m_wellbeingAccumulation / (float)alive;
+                        return;
+                    }
+                    break;
+                case ItemClass.Zone.Office:
+                    CitizenHelper.Instance.GetWorkBehaviour(ref building, ref behaviour, ref alive, ref total);
+                    num = behaviour.m_educated1Count + behaviour.m_educated2Count * 2 + behaviour.m_educated3Count * 3;
+                    if (alive > 0)
+                    {
+                        education = (num * 12 + (alive >> 1)) / alive;
+                        happy = behaviour.m_wellbeingAccumulation / (float)alive;
+                        return;
+                    }
+                    break;
             }
 
             education = 0;
