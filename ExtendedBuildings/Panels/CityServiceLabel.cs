@@ -35,10 +35,9 @@ namespace ExtendedBuildings
                 lastSelected = buildingId;
                 Building data = BuildingManager.instance.m_buildings.m_buffer[buildingId];
                 FindBuildingType(data);
-                if (!String.IsNullOrEmpty(strs[1]))
-                    text = String.Format(strs[5] == ""
-                        ? "{1} : {2}{0}{3} : {4}"
-                        : "{1} : {2}{0}{3} : {4}{0}{5}", strs);
+                text = String.IsNullOrEmpty(strs[1]) ? "" : String.Format(strs[5] == ""
+                    ? "{1} : {2}{0}{3} : {4}"
+                    : "{1} : {2}{0}{3} : {4}{0}{5}", strs);
             }
 
             base.Update();
