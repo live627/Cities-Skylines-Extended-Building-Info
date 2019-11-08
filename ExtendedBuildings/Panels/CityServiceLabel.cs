@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ExtendedBuildings
 {
-    public class ServiceInfoWindow2 : MonoBehaviour
+    public class CityServiceLabel : MonoBehaviour
     {
         UILabel info;
         UILabel label1;

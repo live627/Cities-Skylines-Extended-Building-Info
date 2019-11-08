@@ -8,7 +8,7 @@ namespace ExtendedBuildings
     {
         static GameObject buildingWindowGameObject;
         BuildingInfoWindow5 buildingWindow;
-        ServiceInfoWindow2 serviceWindow;
+        CityServiceLabel serviceWindow;
         private LoadMode _mode;
 
         public override void OnLevelLoaded(LoadMode mode)
@@ -36,7 +36,7 @@ namespace ExtendedBuildings
                         found = true;
                         break;
                     case CityServiceWorldInfoPanel panel:
-                        serviceWindow = buildingWindowGameObject.AddComponent<ServiceInfoWindow2>();
+                        serviceWindow = buildingWindowGameObject.AddComponent<CityServiceLabel>();
                         serviceWindow.ServicePanel = panel;
                         panel.component.eventVisibilityChanged += ServiceBuildingInfo_eventVisibilityChanged;
                         break;
