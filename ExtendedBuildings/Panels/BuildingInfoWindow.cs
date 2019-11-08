@@ -5,7 +5,7 @@ namespace ExtendedBuildings
     using ICities;
     using System;
     using System.Collections.Generic;
-    using System.Reflection;
+    using System.Linq;
     using UnityEngine;
 
     public class BuildingInfoWindow5 : UIPanel
@@ -17,7 +17,6 @@ namespace ExtendedBuildings
         UITextField buildingName;
 
         public ZonedBuildingWorldInfoPanel baseBuildingWindow;
-        FieldInfo baseSub;
 
         UILabel descriptionLabel;
 
