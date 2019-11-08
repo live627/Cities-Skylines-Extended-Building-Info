@@ -21,8 +21,7 @@ namespace ExtendedBuildings
                 label1.color = info.color;
                 label1.textColor = info.textColor;
                 label1.textScale = info.textScale;
-                label1.anchor = UIAnchorStyle.Left | UIAnchorStyle.Bottom;
-                label1.relativePosition = Vector3.zero;
+                label1.relativePosition = new Vector3(0, info.height + 10);
                 label1.font = info.font;
                 m_servicePanel = value;
             }
