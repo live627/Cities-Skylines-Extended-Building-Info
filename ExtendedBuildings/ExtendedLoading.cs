@@ -1,8 +1,5 @@
-﻿using ColossalFramework.UI;
+using ColossalFramework.UI;
 using ICities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace ExtendedBuildings
@@ -14,20 +11,6 @@ namespace ExtendedBuildings
         ServiceInfoWindow2 serviceWindow;
         private LoadMode _mode;
 
-        public class ExtendedLoadingException : Exception
-        {
-            public ExtendedLoadingException(string message) : base(message) { }
-        }
-
-        private static IEnumerable<UIPanel> UIPanelInstances => UIView.library.m_DynamicPanels.Select(p => p.instance).OfType<UIPanel>();
-
-        private static string[] UIPanelNames => UIPanelInstances.Select(p => p.name).ToArray();
-
-        private UIPanel GetPanel(string name)
-        {
-            return UIPanelInstances.FirstOrDefault(p => p.name == name);
-        }
-
         public override void OnLevelLoaded(LoadMode mode)
         {
             if (mode != LoadMode.LoadGame && mode != LoadMode.NewGame)
@@ -35,30 +18,29 @@ namespace ExtendedBuildings
 
             _mode = mode;
 
+            bool found = false;
             buildingWindowGameObject = new GameObject("buildingWindowObject");
+            for (int i = 0; i < UIView.library.m_DynamicPanels.Length; i++)
+                switch (UIView.library.m_DynamicPanels[i].instance.GetComponent<BuildingWorldInfoPanel>())
+                {
+                    case ZonedBuildingWorldInfoPanel panel:
+                        if (found) break;
+                        var buildingInfo = panel.component;
 
-            var buildingInfo = UIView.Find<UIPanel>("(Library) ZonedBuildingWorldInfoPanel");
-            if (buildingInfo == null)
-                throw new ExtendedLoadingException("UIPanel not found (update broke the mod!): (Library) ZonedBuildingWorldInfoPanel\nAvailable panels are:\n" +
-                    string.Join("  \n", UIPanelNames));
-
-            buildingWindow = buildingWindowGameObject.AddComponent<BuildingInfoWindow5>();
-            buildingWindow.transform.parent = buildingInfo.transform;
-            buildingWindow.size = new Vector3(buildingInfo.size.x, buildingInfo.size.y);
-            buildingWindow.baseBuildingWindow = buildingInfo.gameObject.transform.GetComponentInChildren<ZonedBuildingWorldInfoPanel>();
-            buildingWindow.position = new Vector3(0, 12);
-            buildingInfo.eventVisibilityChanged += BuildingInfo_eventVisibilityChanged;
-
-            var serviceBuildingInfo = GetPanel("(Library) CityServiceWorldInfoPanel");//UIView.Find<UIPanel>("(Library) CityServiceWorldInfoPanel");
-            if (serviceBuildingInfo == null)
-            {
-                throw new ExtendedLoadingException("UIPanel not found (update broke the mod!): (Library) CityServiceWorldInfoPanel\nAvailable panels are:\n" +
-                    string.Join("  \n", UIPanelNames));
-            }
-            serviceWindow = buildingWindowGameObject.AddComponent<ServiceInfoWindow2>(); 
-            serviceWindow.ServicePanel = serviceBuildingInfo.gameObject.transform.GetComponentInChildren<CityServiceWorldInfoPanel>();
-            
-            serviceBuildingInfo.eventVisibilityChanged += ServiceBuildingInfo_eventVisibilityChanged;
+                        buildingWindow = buildingWindowGameObject.AddComponent<BuildingInfoWindow5>();
+                        buildingWindow.transform.parent = buildingInfo.transform;
+                        buildingWindow.size = new Vector3(buildingInfo.size.x, buildingInfo.size.y);
+                        buildingWindow.baseBuildingWindow = panel;
+                        buildingWindow.position = new Vector3(0, 12);
+                        buildingInfo.eventVisibilityChanged += BuildingInfo_eventVisibilityChanged;
+                        found = true;
+                        break;
+                    case CityServiceWorldInfoPanel panel:
+                        serviceWindow = buildingWindowGameObject.AddComponent<ServiceInfoWindow2>();
+                        serviceWindow.ServicePanel = panel;
+                        panel.component.eventVisibilityChanged += ServiceBuildingInfo_eventVisibilityChanged;
+                        break;
+                }
         }
 
         private void ServiceBuildingInfo_eventVisibilityChanged(UIComponent component, bool value)
