@@ -53,7 +53,7 @@ namespace ExtendedBuildings
             aresourceLabels = new List<UILabel>();
             var ares = new string[]
             {
-                "Service", 
+                "Service",
                 "Education",
                 "Happiness",
                 resNames[8], // Noise
@@ -62,7 +62,7 @@ namespace ExtendedBuildings
             };
             var adesc = new string[]
             {
-                "ServiceDescription", 
+                "ServiceDescription",
                 "EducationDescription",
                 "HappinessDescription",
                 resNames[8], // Noise
@@ -105,7 +105,7 @@ namespace ExtendedBuildings
 
             var ares = new string[]
             {
-                "Service", 
+                "Service",
                 "Education",
                 "Happiness",
                 resNames[8], // Noise
@@ -114,7 +114,7 @@ namespace ExtendedBuildings
             };
             var adesc = new string[]
             {
-                "ServiceDescription", 
+                "ServiceDescription",
                 "EducationDescription",
                 "HappinessDescription",
                 resNames[8], // Noise
@@ -171,18 +171,18 @@ namespace ExtendedBuildings
 
             barWidth = size.x - 28;
             float y = ModConfig.Instance.Display == ModConfig.DisplayCategory.Compact ? 70 : 414;
-            
+
             descriptionLabel.textScale = 0.6f;
             descriptionLabel.wordWrap = true;
             descriptionLabel.autoSize = false;
             descriptionLabel.autoHeight = true;
             descriptionLabel.width = barWidth;
             descriptionLabel.anchor = UIAnchorStyle.Top | UIAnchorStyle.Left | UIAnchorStyle.Right;
-            
+
             y += vertPadding;
             height = y;
         }
-        
+
         public override void Update()
         {
             if (!WorldInfoPanel.AnyWorldInfoPanelOpen())
@@ -277,7 +277,7 @@ namespace ExtendedBuildings
                 }
                 maxHeight = Math.Max(y, maxHeight);
             }
-            
+
             int numFactors = 0;
             float newTop = maxHeight;
             foreach (var resBar in resourceBars)
