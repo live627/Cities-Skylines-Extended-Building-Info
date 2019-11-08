@@ -1,6 +1,5 @@
 using ColossalFramework.UI;
 using System;
-using System.Reflection;
 using UnityEngine;
 
 namespace ExtendedBuildings
@@ -9,7 +8,6 @@ namespace ExtendedBuildings
     {
         UILabel info;
         UILabel label1;
-        FieldInfo baseSub;
         string[] strs;
         CityServiceWorldInfoPanel m_servicePanel;
         public CityServiceWorldInfoPanel ServicePanel
@@ -18,7 +16,7 @@ namespace ExtendedBuildings
             set
             {
                 info = value.Find<UILabel>("Info");
-                
+
                 label1 = info.AddUIComponent<UILabel>();
                 label1.color = info.color;
                 label1.textColor = info.textColor;
@@ -37,7 +35,7 @@ namespace ExtendedBuildings
             if (!WorldInfoPanel.AnyWorldInfoPanelOpen() || ServicePanel == null)
                 return;
 
-            var buildingId = GetParentInstanceId().Building;
+            var buildingId = WorldInfoPanel.GetCurrentInstanceID().Building;
             if (enabled && info.isVisible && BuildingManager.instance != null && ((SimulationManager.instance.m_currentFrameIndex & 15u) == 15u || lastSelected != buildingId))
             {
                 strs = new string[] { Environment.NewLine, "", "", "", "", "" };
@@ -116,14 +114,6 @@ namespace ExtendedBuildings
         }
 
         private string GetLlamaSightings(double scale) =>
-            ((SimulationManager.instance.m_currentGameTime.DayOfYear * scale + GetParentInstanceId().Building) / 1000).ToString("F0");
-
-        private InstanceID GetParentInstanceId()
-        {
-            if (baseSub == null)
-                baseSub = m_servicePanel.GetType().GetField("m_InstanceID", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            return (InstanceID)baseSub.GetValue(m_servicePanel);
-        }
+            ((SimulationManager.instance.m_currentGameTime.DayOfYear * scale + WorldInfoPanel.GetCurrentInstanceID().Building) / 1000).ToString("F0");
     }
 }
