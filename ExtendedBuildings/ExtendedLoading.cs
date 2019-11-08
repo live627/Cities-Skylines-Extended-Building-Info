@@ -36,18 +36,10 @@ namespace ExtendedBuildings
                         found = true;
                         break;
                     case CityServiceWorldInfoPanel panel:
-                        serviceWindow = buildingWindowGameObject.AddComponent<CityServiceLabel>();
-                        serviceWindow.ServicePanel = panel;
-                        panel.component.eventVisibilityChanged += ServiceBuildingInfo_eventVisibilityChanged;
+                        CityServiceLabel serviceWindow = panel.component.AddUIComponent<CityServiceLabel>();
                         break;
                 }
         }
-
-        private void ServiceBuildingInfo_eventVisibilityChanged(UIComponent component, bool value)
-        {
-            serviceWindow.Update();
-        }
-
         public override void OnLevelUnloading()
         {
             if (_mode != LoadMode.LoadGame && _mode != LoadMode.NewGame)

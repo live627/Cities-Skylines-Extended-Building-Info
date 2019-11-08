@@ -4,47 +4,44 @@ using UnityEngine;
 
 namespace ExtendedBuildings
 {
-    public class CityServiceLabel : MonoBehaviour
+    public class CityServiceLabel : UILabel
     {
         UILabel info;
-        UILabel label1;
         string[] strs;
-        CityServiceWorldInfoPanel m_servicePanel;
-        public CityServiceWorldInfoPanel ServicePanel
-        {
-            get { return m_servicePanel; }
-            set
-            {
-                info = value.Find<UILabel>("Info");
-
-                label1 = info.AddUIComponent<UILabel>();
-                label1.color = info.color;
-                label1.textColor = info.textColor;
-                label1.textScale = info.textScale;
-                label1.relativePosition = new Vector3(0, info.height + 10);
-                label1.font = info.font;
-                m_servicePanel = value;
-            }
-        }
-
         int lastSelected;
 
-        public void Update()
+        public override void Start()
         {
-            if (!WorldInfoPanel.AnyWorldInfoPanelOpen() || ServicePanel == null)
+            Debug.Log(parent.name);
+            info = parent.Find<UILabel>("Info");
+            AlignTo(info, UIAlignAnchor.BottomLeft);
+            textColor = info.textColor;
+            textScale = info.textScale;
+             relativePosition = new Vector3(0, info.height + 10);
+            font = info.font;
+
+            base.Start();
+        }
+
+        public override void Update()
+        {
+            if (!WorldInfoPanel.AnyWorldInfoPanelOpen() || !isVisible)
                 return;
 
             var buildingId = WorldInfoPanel.GetCurrentInstanceID().Building;
-            if (enabled && info.isVisible && BuildingManager.instance != null && ((SimulationManager.instance.m_currentFrameIndex & 15u) == 15u || lastSelected != buildingId))
+            if (BuildingManager.instance != null && ((SimulationManager.instance.m_currentFrameIndex & 15u) == 15u || lastSelected != buildingId))
             {
                 strs = new string[] { Environment.NewLine, "", "", "", "", "" };
                 lastSelected = buildingId;
                 Building data = BuildingManager.instance.m_buildings.m_buffer[buildingId];
                 FindBuildingType(data);
-                label1.text = String.Format(strs[5] == ""
-                    ? "{0}{0}{0}{1} : {2}{0}{3} : {4}"
-                    : "{0}{0}{0}{1} : {2}{0}{3} : {4}{0}{5}", strs);
+                if (!String.IsNullOrEmpty(strs[1]))
+                    text = String.Format(strs[5] == ""
+                        ? "{1} : {2}{0}{3} : {4}"
+                        : "{1} : {2}{0}{3} : {4}{0}{5}", strs);
             }
+
+            base.Update();
         }
 
         private void FindBuildingType(Building data)
