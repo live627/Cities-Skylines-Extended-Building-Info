@@ -12,12 +12,11 @@ namespace ExtendedBuildings
 
         public override void Start()
         {
-            Debug.Log(parent.name);
             info = parent.Find<UILabel>("Info");
             AlignTo(info, UIAlignAnchor.BottomLeft);
             textColor = info.textColor;
             textScale = info.textScale;
-             relativePosition = new Vector3(0, info.height + 10);
+            relativePosition = new Vector3(0, info.height + 10);
             font = info.font;
 
             base.Start();
@@ -45,10 +44,8 @@ namespace ExtendedBuildings
 
         private void FindBuildingType(Building data)
         {
-            var productionRate = PlayerBuildingAI.GetProductionRate(data.m_productionRate,
+            var productionRate = data.m_fireIntensity != 0 ? 0 : PlayerBuildingAI.GetProductionRate(data.m_productionRate,
                 EconomyManager.instance.GetBudget(data.Info.m_class));
-            if (data.m_fireIntensity != 0)
-                productionRate = 0;
 
             switch (data.Info.m_buildingAI)
             {
