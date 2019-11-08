@@ -5,7 +5,6 @@ namespace ExtendedBuildings
     using ICities;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using UnityEngine;
 
     public class BuildingInfoWindow5 : UIPanel
