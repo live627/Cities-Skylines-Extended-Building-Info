@@ -1,10 +1,8 @@
 ﻿using ColossalFramework;
 using ColossalFramework.Globalization;
 using ColossalFramework.Math;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEngine;
 
 namespace ExtendedBuildings
@@ -18,7 +16,7 @@ namespace ExtendedBuildings
 
     class Localization
     {
-        private static Dictionary<string, string> texts;
+        private static Dictionary<string, string> texts = new Dictionary<string, string>();
         private static Dictionary<string, Markov> buildingNames = new Dictionary<string, Markov>();
         private static Dictionary<string, Markov> buildingDescriptions = new Dictionary<string, Markov>();
         private static string[] manifestResourceNames;
@@ -44,52 +42,48 @@ namespace ExtendedBuildings
 
         public static string Get(LocalizationCategory cat, string name)
         {
-            if (cat == LocalizationCategory.Markov)
-                return GetResource(name);
-            else
-            {
-                var key = cat.ToString().ToLower() + "_" + name.ToLower();
-                if (!texts.ContainsKey(key))
-                    return "!! " + name;
+            var key = cat.ToString().ToLower() + "_" + name.ToLower();
+            if (!texts.ContainsKey(key))
+                return "!! " + name;
 
-                return texts[key];
-            }
+            return texts[key];
         }
 
         private static void SetText()
         {
-            var res = GetResource("text").Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
-            texts = new Dictionary<string, string>();
             var header = "";
-            foreach (var line in res)
+            List<string> buffer = GetResource("text");
+            for (int i = 0; i < buffer.Count; i++)
             {
-                if (line == null || line.Trim().Length == 0)
-                    continue;
-
-                var firstSpace = line.Trim().IndexOf(' ');
+                var firstSpace = buffer[i].IndexOf(' ');
                 if (firstSpace == -1)
-                    header = line.Trim().Replace(":", "").ToLower();
+                    header = buffer[i].Replace(":", "").ToLower();
                 else
-                    texts.Add(header + "_" + line.Substring(0, firstSpace).ToLower(), line.Substring(firstSpace + 1).Trim());
+                    texts.Add(header + "_" + buffer[i].Substring(0, firstSpace).ToLower(), buffer[i].Substring(firstSpace + 1));
             }
         }
 
-        private static string GetResource(string resourceName)
+        public static List<string> GetResource(string resourceName)
         {
             var rn = $"ExtendedBuildings.Localization.{locale.Trim().ToLower()}.{resourceName}.txt";
-            if (!manifestResourceNames.Contains(rn))
+            if (System.Array.IndexOf(manifestResourceNames, rn) != -1)
             {
                 Debug.Log($"Embedded resource {rn} not found. Reverting to English.");
                 rn = $"ExtendedBuildings.Localization.{"en"}.{resourceName}.txt";
             }
 
-            using (Stream stream = assembly.GetManifestResourceStream(rn))
+            List<string> strContent = new List<string>();
+            using (StreamReader reader = new StreamReader(assembly.GetManifestResourceStream(rn)))
             {
-                using (StreamReader reader = new StreamReader(stream))
+                while (!reader.EndOfStream)
                 {
-                    return reader.ReadToEnd();
+                    string buffer = reader.ReadLine().Trim();
+                    if (buffer.Length > 0)
+                        strContent.Add(buffer);
                 }
             }
+
+            return strContent;
         }
 
         private static void LoadTextFiles()
