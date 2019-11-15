@@ -8,7 +8,8 @@ namespace ExtendedBuildings
     {
         public override void OnLevelLoaded(LoadMode mode)
         {
-            if (mode != LoadMode.LoadGame && mode != LoadMode.NewGame)
+            if (mode != LoadMode.LoadGame && mode != LoadMode.NewGame &&
+                mode != LoadMode.LoadScenario && mode != LoadMode.NewGameFromScenario)
                 return;
             
             for (int i = 0; i < UIView.library.m_DynamicPanels.Length; i++)
