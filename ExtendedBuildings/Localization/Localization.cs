@@ -66,7 +66,7 @@ namespace ExtendedBuildings
         public static List<string> GetResource(string resourceName)
         {
             var rn = $"ExtendedBuildings.Localization.{locale.Trim().ToLower()}.{resourceName}.txt";
-            if (System.Array.IndexOf(manifestResourceNames, rn) != -1)
+            if (System.Array.IndexOf(manifestResourceNames, rn) == -1)
             {
                 Debug.Log($"Embedded resource {rn} not found. Reverting to English.");
                 rn = $"ExtendedBuildings.Localization.{"en"}.{resourceName}.txt";
